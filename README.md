@@ -35,6 +35,7 @@ alembic/
 .github/workflows/
 requirements/
 docs/
+demo-ui/
 ```
 
 ## Implemented API Surface
@@ -63,16 +64,70 @@ uv sync --all-extras
 docker compose up -d db test-db
 ```
 
-5. Run the application:
+5. Apply migrations:
+
+```bash
+make db-upgrade
+```
+
+6. Run the application:
 
 ```bash
 make run
 ```
 
-6. Apply migrations:
+## Startup Commands
+If `make` is available:
 
 ```bash
+docker compose up -d db test-db
 make db-upgrade
+make run
+streamlit run demo-ui/streamlit_app.py
+```
+
+If you are on Windows Git Bash without `make` or `uv`, use:
+
+```bash
+docker compose up -d db test-db
+python -m alembic upgrade head
+python -m uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+python -m streamlit run demo-ui/streamlit_app.py
+```
+
+Backend:
+
+```text
+http://127.0.0.1:8000
+```
+
+Demo UI:
+
+```text
+http://localhost:8501
+```
+
+## Demo UI
+A separate demo UI is available in `demo-ui/README.md`.
+
+It is now implemented with Streamlit and is meant for showcasing the backend directly in the browser. It includes:
+- health and version checks
+- register and login
+- refresh token rotation
+- current user lookup
+- admin user listing
+- a request and response log panel
+
+To run it locally:
+
+```bash
+streamlit run demo-ui/streamlit_app.py
+```
+
+Then open:
+
+```text
+http://localhost:8501
 ```
 
 ## Environment Variables
@@ -101,6 +156,7 @@ make security
 make test-db-up
 make db-upgrade
 make db-revision m="describe_change"
+streamlit run demo-ui/streamlit_app.py
 ```
 
 ## Testing And Quality Gates

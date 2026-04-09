@@ -43,6 +43,8 @@ Implemented so far:
 - admin-only API surface for RBAC verification
 - GitHub Actions workflows for CI, coverage, and security checks
 - OpenAPI request and response examples on primary schemas
+- root-level low-level design document in `LLD.md`
+- separate Streamlit demo UI in `demo-ui/` for showcasing backend behavior
 - project guidance and agent workflow files
 
 ## Current Architecture Decisions
