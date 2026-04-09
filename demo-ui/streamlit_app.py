@@ -106,11 +106,14 @@ def api_request(
 
 def render_sidebar() -> None:
     st.sidebar.header("Demo Settings")
-    st.session_state.api_base_url = st.sidebar.text_input(
-        "API Base URL",
-        value=st.session_state.api_base_url,
-        help="Default target is the local backend under /api/v1.",
-    ).strip() or DEFAULT_API_BASE_URL
+    st.session_state.api_base_url = (
+        st.sidebar.text_input(
+            "API Base URL",
+            value=st.session_state.api_base_url,
+            help="Default target is the local backend under /api/v1.",
+        ).strip()
+        or DEFAULT_API_BASE_URL
+    )
 
     if st.sidebar.button("Seed Example Values", use_container_width=True):
         st.session_state.example_email = "demo-user@example.com"
@@ -139,8 +142,7 @@ def render_intro() -> None:
         """
     )
     st.info(
-        "Run the backend first, then start this app with "
-        "`streamlit run demo-ui/streamlit_app.py`."
+        "Run the backend first, then start this app with `streamlit run demo-ui/streamlit_app.py`."
     )
 
 

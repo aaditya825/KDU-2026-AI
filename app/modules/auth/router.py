@@ -41,8 +41,7 @@ async def register_user(
     response_model=TokenResponse,
     summary="Authenticate a user",
     description=(
-        "Authenticates a user with email and password and returns access and "
-        "refresh tokens."
+        "Authenticates a user with email and password and returns access and refresh tokens."
     ),
 )
 async def login_user(
