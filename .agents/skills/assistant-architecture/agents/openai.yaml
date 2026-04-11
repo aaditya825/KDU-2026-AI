@@ -1,0 +1,7 @@
+interface:
+  display_name: "Assistant Architecture"
+  short_description: "Plan or refactor the repo architecture safely"
+  default_prompt: "Use $assistant-architecture to plan or review a feature change against this repo's agreed assistant architecture."
+
+policy:
+  allow_implicit_invocation: true
