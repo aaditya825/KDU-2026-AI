@@ -1,0 +1,7 @@
+interface:
+  display_name: "Streamlit Chat Frontend"
+  short_description: "Build the Streamlit UI for this assistant"
+  default_prompt: "Use $streamlit-chat-frontend to build or modify the Streamlit chat UI for this assistant."
+
+policy:
+  allow_implicit_invocation: true

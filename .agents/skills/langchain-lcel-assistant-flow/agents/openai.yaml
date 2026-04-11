@@ -1,0 +1,7 @@
+interface:
+  display_name: "LangChain LCEL Flow"
+  short_description: "Implement the assistant's LangChain flow"
+  default_prompt: "Use $langchain-lcel-assistant-flow to implement or extend the LangChain execution flow for this assistant."
+
+policy:
+  allow_implicit_invocation: true

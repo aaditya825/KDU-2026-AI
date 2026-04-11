@@ -1,0 +1,7 @@
+interface:
+  display_name: "FastAPI Assistant Backend"
+  short_description: "Implement backend modules for the assistant"
+  default_prompt: "Use $fastapi-assistant-backend to implement or refactor the FastAPI backend for this assistant."
+
+policy:
+  allow_implicit_invocation: true
