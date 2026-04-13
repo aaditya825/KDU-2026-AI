@@ -1,0 +1,90 @@
+@startuml Stock Trading Agent System Design
+!theme plain
+skinparam backgroundColor #ffffff
+skinparam rectangle {
+    BackgroundColor #87CEEB
+    BorderColor #333333
+    FontColor #000000
+}
+
+rectangle "📱 Streamlit Frontend" as frontend {
+    rectangle "Chat Interface" as chat
+    rectangle "Portfolio Dashboard" as dashboard  
+    rectangle "Approval UI" as approval_ui
+    rectangle "Session Manager" as session
+}
+
+rectangle "🤖 LangGraph Agent Engine" as agent {
+    rectangle "State Management" as state {
+        rectangle "PortfolioState TypedDict" as portfolio_state
+    }
+    
+    rectangle "Agent Nodes" as nodes {
+        rectangle "1️⃣ Analyze Request" as n1
+        rectangle "2️⃣ Fetch Prices" as n2
+        rectangle "3️⃣ Calculate Total" as n3
+        rectangle "4️⃣ Currency Convert" as n4
+        rectangle "5️⃣ Approval Gate" as n5
+        rectangle "6️⃣ Execute Trade" as n6
+    }
+    
+    rectangle "Conditional Routers" as routers {
+        rectangle "Tool Router" as r1
+        rectangle "Currency Router" as r2
+        rectangle "Approval Router" as r3
+    }
+}
+
+rectangle "💾 Data Layer" as data {
+    rectangle "SQLite Checkpointer" as checkpointer
+    database "checkpoints.db" as db
+}
+
+rectangle "🛠️ Tools & Services" as tools {
+    rectangle "Stock Simulator" as tool_stock
+    rectangle "Currency Converter" as tool_currency
+    rectangle "Validators" as validators
+    rectangle "Logger" as logger
+}
+
+rectangle "🌐 External APIs" as external {
+    rectangle "Google Gemini\nLLM Provider" as gemini
+    rectangle "LangSmith\nObservability" as langsmith
+}
+
+' Connections
+chat --> session: user query
+dashboard --> session: display state
+approval_ui --> session: approval input
+
+session --> agent: invoke
+
+n1 --> r1: route decision
+r1 --> n2: need prices
+r1 --> n3: calculate
+n2 --> n3: flow
+n3 --> r2: currency check
+r2 --> n4: convert
+r2 --> r3: approve check
+n4 --> r3: flow
+r3 --> n5: pending
+r3 --> n6: execute
+n5 --> approval_ui: wait
+approval_ui --> n6: resume
+n6 --> session: response
+
+portfolio_state <-- n1: read/write
+portfolio_state <-- n3: read/write
+portfolio_state <-- n6: write
+
+checkpointer --> db: persist
+portfolio_state --> checkpointer: checkpoint
+
+n1 -.-> gemini: LLM call
+n2 -.-> tool_stock: get prices
+n4 -.-> tool_currency: convert
+n1 -.-> validators: validate
+n1 -.-> logger: log
+
+agent -.-> langsmith: trace
+

@@ -1,0 +1,76 @@
+@startuml Stock Trading Agent Architecture
+!theme plain
+skinparam backgroundColor #ffffff
+skinparam ArrowColor #333333
+skinparam ActivityBackgroundColor #87CEEB
+skinparam ActivityBorderColor #333333
+
+start
+
+:👤 User Input\nChat Interface;
+
+:📝 Analyze Request\nParse user intent;
+
+if (Need stock\nprices?) then (yes)
+    :📈 Fetch Stock Price\nMock API call;
+else (no)
+endif
+
+:🧮 Calculate Portfolio\nCompute total value;
+
+if (Currency\nconversion?) then (INR/EUR)
+    :💱 Currency Conversion\nUSD → target currency;
+else (USD)
+endif
+
+if (Trade\npending?) then (yes)
+    :⏸️ Human Approval Gate\nWait for user;
+    
+    if (User\napproved?) then (✓ Yes)
+        :✅ Execute Trade\nUpdate holdings;
+    else (✗ No)
+        :❌ Cancel Trade\nDiscard request;
+    endif
+else (no)
+endif
+
+:📧 Generate Response\nCompose message;
+
+:💾 Checkpoint State\nSave to SQLite;
+
+:📊 Update Dashboard\nRefresh UI;
+
+:✉️ Send Response\nReturn to user;
+
+stop
+
+note right
+  **LangGraph Agent Flow:**
+  
+  **Node Chain:**
+  1. Analyze Request → Parse intent
+  2. Fetch Stock Price → Call tool (conditional)
+  3. Calculate Portfolio → Compute total
+  4. Currency Conversion → Convert if needed
+  5. Human Approval → Gate sensitive actions
+  6. Execute Trade → Persist changes
+  
+  **Key Features:**
+  ✓ Stateful TypedDict state
+  ✓ 3 Conditional routers
+  ✓ Human-in-loop gates
+  ✓ Thread-based isolation
+  ✓ SQLite checkpointing
+  ✓ LangSmith tracing
+end note
+
+note right
+  **External Integrations:**
+  
+  📱 Gemini API → LLM reasoning
+  📈 Stock Simulator → Price data
+  💱 Currency Converter → Rate conversion
+  📊 LangSmith → Observability
+end note
+
+@enduml

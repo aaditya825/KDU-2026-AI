@@ -1,0 +1,78 @@
+@startuml Stock Trading Agent Workflow
+
+!theme plain
+skinparam backgroundColor #ffffff
+skinparam defaultTextAlignment center
+skinparam ArrowColor #333333
+skinparam StateBackgroundColor #E8F4F8
+skinparam StateBorderColor #333333
+
+[*] --> user_input
+
+state "👤 User Input\nChat Interface" as user_input
+state "📝 Entry Node\nParse Input" as entry
+state "🔀 Analyze Request\nRoute Decision" as router
+
+user_input --> entry
+entry --> router
+
+' Route 1: Portfolio Query Path
+state "📊 Fetch Stock Prices\nTool Call" as fetch_prices
+state "🧮 Calculate Portfolio\nCompute Total" as calc_total
+state "💱 Currency Conversion\nUSD → INR/EUR" as convert
+
+router --> fetch_prices: portfolio_query
+fetch_prices --> calc_total: prices_fetched
+calc_total --> convert: need_conversion?
+
+' Route 2: Trading Path
+state "🤖 Analyze Trade\nAI Decision" as analyze_trade
+state "⏸️ Human Approval Gate\nWait for User" as approval_gate
+state "✅ Execute Trade\nUpdate Holdings" as execute
+
+router --> analyze_trade: trade_command
+analyze_trade --> approval_gate: trade_pending
+approval_gate --> execute: approved
+
+' Route 3: Fallback Path
+state "💬 Reply Node\nGenerate Response" as reply_node
+
+router --> reply_node: other_query
+
+' Convergence paths
+convert --> reply_node: portfolio_info
+execute --> reply_node: trade_confirmed
+approval_gate --> reply_node: rejected
+
+' Final states
+state "✉️ Response to User\nChat Message" as response
+state "📊 Update Dashboard\nRefresh UI" as dashboard
+state "💾 Checkpoint State\nSave to SQLite" as checkpoint
+
+reply_node --> response
+response --> dashboard
+response --> checkpoint
+checkpoint --> [*]
+
+note right of fetch_prices
+  **Tool Integration:**
+  StockSimulator API
+  Mock price data
+end note
+
+note right of approval_gate
+  **Human-in-Loop:**
+  Pause execution
+  Wait for user approval
+  Resume on confirmation
+end note
+
+note bottom of router
+  **LangSmith Observability:**
+  ✓ Trace all LLM calls
+  ✓ Token usage tracking
+  ✓ Cost computation
+  ✓ Execution metrics
+end note
+
+@enduml
