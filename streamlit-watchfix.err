@@ -1,0 +1,13 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 189, in _run_module_as_main
+  File "<frozen runpy>", line 148, in _get_module_details
+  File "<frozen runpy>", line 112, in _get_module_details
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\streamlit\__init__.py", line 62, in <module>
+    from streamlit import config as _config
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python313\Lib\site-packages\streamlit\config.py", line 23, in <module>
+    import secrets
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python313\Lib\secrets.py", line 17, in <module>
+    from hmac import compare_digest
+  File "C:\Users\Dell\AppData\Local\Programs\Python\Python313\Lib\hmac.py", line 8, in <module>
+    import _hashlib as _hashopenssl
+KeyboardInterrupt
