@@ -1,0 +1,48 @@
+app_name: Hybrid-Search RAG Chatbot
+environment: development
+data_dir: data
+
+chunking:
+  strategy: contextual
+  chunk_size: 512
+  overlap: 50
+  section_aware: true
+
+embeddings:
+  provider: sentence-transformers
+  model_name: all-MiniLM-L6-v2
+  batch_size: 32
+
+retrieval:
+  semantic_top_k: 10
+  keyword_top_k: 10
+  fused_top_k: 10
+  rerank_top_k: 10
+  final_top_k: 5
+  fusion_strategy: rrf
+  reranker_name: cross-encoder
+  reranker_required: true
+
+generation:
+  provider: gemini
+  model_name: gemini-2.5-flash
+  temperature: 0.1
+  max_tokens: 800
+  request_timeout_seconds: 60.0
+
+storage:
+  vector_store: chromadb
+  vector_store_path: data/vector_db
+  keyword_store: bm25
+  keyword_store_path: data/keyword_index
+  metadata_store_path: data/processed/metadata.json
+
+ui:
+  framework: streamlit
+  page_title: Hybrid-Search RAG Chatbot
+  show_metrics: true
+  upload_directory: data/raw/uploads
+
+logging:
+  config_path: config/logging.yaml
+  level: INFO

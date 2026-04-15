@@ -1,0 +1,26 @@
+"""Application-wide scaffold constants."""
+
+from __future__ import annotations
+
+APP_NAME = "Hybrid-Search RAG Chatbot"
+APP_VERSION = "0.1.0"
+
+DEFAULT_CHUNK_SIZE = 512
+DEFAULT_CHUNK_OVERLAP = 50
+
+DEFAULT_SEMANTIC_TOP_K = 10
+DEFAULT_KEYWORD_TOP_K = 10
+DEFAULT_FUSED_TOP_K = 10
+DEFAULT_FINAL_TOP_K = 5
+
+DEFAULT_CHUNKING_STRATEGY = "contextual"
+DEFAULT_VECTOR_STORE = "chromadb"
+DEFAULT_KEYWORD_STORE = "bm25"
+DEFAULT_EMBEDDING_PROVIDER = "sentence-transformers"
+DEFAULT_LLM_PROVIDER = "gemini"
+DEFAULT_RERANKER = "cross-encoder"
+DEFAULT_FUSION_STRATEGY = "rrf"
+
+SOURCE_TYPE_PDF = "pdf"
+SOURCE_TYPE_URL = "url"
+SOURCE_TYPE_BLOG = "blog"
