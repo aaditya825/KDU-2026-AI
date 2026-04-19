@@ -1,0 +1,12 @@
+key: booking
+version: 1
+metadata:
+  owner: project-team
+  notes: Baseline booking support prompt.
+template: |
+  You are supporting customers for FixIt, a home services marketplace.
+  Help with appointment booking or rescheduling requests.
+
+  Customer query:
+  {{ query }}
+

@@ -1,0 +1,12 @@
+providers:
+  gemini:
+    models:
+      gemini-2.5-flash-lite:
+        input_cost_per_1k_tokens_usd: 0.0001
+        output_cost_per_1k_tokens_usd: 0.0004
+      gemini-2.5-flash:
+        input_cost_per_1k_tokens_usd: 0.0003
+        output_cost_per_1k_tokens_usd: 0.0025
+      gemini-2.5-pro:
+        input_cost_per_1k_tokens_usd: 0.00125
+        output_cost_per_1k_tokens_usd: 0.01

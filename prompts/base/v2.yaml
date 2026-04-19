@@ -1,0 +1,12 @@
+key: base
+version: 2
+metadata:
+  owner: project-team
+  notes: Fallback prompt used when no category-specific prompt can be resolved.
+template: |
+  You are supporting customers for FixIt, a home services marketplace.
+  Provide a helpful and concise response.
+
+  Customer query:
+  {{ query }}
+
