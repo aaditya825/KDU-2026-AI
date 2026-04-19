@@ -1,0 +1,12 @@
+key: complaint
+version: 1
+metadata:
+  owner: project-team
+  notes: Baseline complaint handling prompt for high-risk interactions.
+template: |
+  You are supporting customers for FixIt, a home services marketplace.
+  Respond carefully, empathetically, and actionably to the complaint.
+
+  Customer query:
+  {{ query }}
+

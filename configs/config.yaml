@@ -1,0 +1,73 @@
+app:
+  name: fixit-llmops
+  environment: local
+  entry_mode: api
+
+feature_flags:
+  use_rule_based_classifier: true
+  enable_prompt_versioning: true
+  enforce_strict_budget: true
+  include_debug_metadata: true
+
+classifier:
+  mode: rule_based
+  provider: gemini
+  model_id: gemini-2.5-flash-lite
+  low_confidence_threshold: 0.65
+  fallback_to_rule_based_on_error: true
+
+cost_limits:
+  daily_usd: 16.67
+  monthly_usd: 500.00
+  warning_threshold_ratio: 0.70
+  critical_threshold_ratio: 0.85
+
+models:
+  default_tier: economy
+  tiers:
+    economy:
+      provider: gemini
+      model_id: gemini-2.5-flash-lite
+      max_input_tokens: 1048576
+      max_output_tokens: 65536
+    balanced:
+      provider: gemini
+      model_id: gemini-2.5-flash
+      max_input_tokens: 1048576
+      max_output_tokens: 65536
+    premium:
+      provider: gemini
+      model_id: gemini-2.5-pro
+      max_input_tokens: 1048576
+      max_output_tokens: 65536
+
+routing:
+  default_prompt_key: base
+  default_prompt_version: 2
+  rules:
+    - name: faq-low
+      category: FAQ
+      complexity: low
+      route_to_tier: economy
+      prompt_key: faq
+      prompt_version: 1
+    - name: booking-medium
+      category: booking
+      complexity: medium
+      route_to_tier: balanced
+      prompt_key: booking
+      prompt_version: 1
+    - name: complaint-high
+      category: complaint
+      complexity: high
+      route_to_tier: premium
+      prompt_key: complaint
+      prompt_version: 1
+  low_confidence_fallback_tier: balanced
+
+prompts:
+  defaults:
+    faq: 1
+    booking: 1
+    complaint: 1
+    base: 1

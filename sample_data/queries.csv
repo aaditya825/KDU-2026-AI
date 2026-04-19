@@ -1,0 +1,10 @@
+query,category,complexity,expected_response_type
+"What are your hours?",FAQ,low,simple
+"My plumber didn't show up, need refund",complaint,high,complex
+"Can I reschedule my cleaning appointment?",booking,medium,standard
+"Do you service apartments in Colombo?",FAQ,low,simple
+"The electrician damaged my wall and no one replied",complaint,high,complex
+"Can I move my booking from Friday to Saturday morning?",booking,medium,standard
+"I need help and I'm not sure whether to cancel or reschedule",booking,medium,standard
+"Your service was terrible and I want compensation",complaint,high,complex
+

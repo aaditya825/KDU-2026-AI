@@ -1,0 +1,47 @@
+{
+  "base:1": {
+    "average_cost_usd": 5.4e-05,
+    "average_latency_ms": 2595.74,
+    "evaluation_score": null,
+    "failure_count": 1,
+    "last_used_at": "2026-04-19T11:23:42.726499+00:00",
+    "success_count": 1,
+    "usage_count": 2
+  },
+  "base:2": {
+    "average_cost_usd": 3.8e-05,
+    "average_latency_ms": 3040.269,
+    "evaluation_score": null,
+    "failure_count": 2,
+    "last_used_at": "2026-04-19T12:26:30.993675+00:00",
+    "success_count": 2,
+    "usage_count": 4
+  },
+  "booking:1": {
+    "average_cost_usd": 6.3e-05,
+    "average_latency_ms": 97.454,
+    "evaluation_score": null,
+    "failure_count": 6,
+    "last_used_at": "2026-04-19T12:43:58.497041+00:00",
+    "success_count": 26,
+    "usage_count": 32
+  },
+  "complaint:1": {
+    "average_cost_usd": 0.002513,
+    "average_latency_ms": 0.025,
+    "evaluation_score": null,
+    "failure_count": 2,
+    "last_used_at": "2026-04-19T12:20:56.030149+00:00",
+    "success_count": 24,
+    "usage_count": 26
+  },
+  "faq:1": {
+    "average_cost_usd": 0.000113,
+    "average_latency_ms": 226.483,
+    "evaluation_score": null,
+    "failure_count": 3,
+    "last_used_at": "2026-04-19T12:43:58.492064+00:00",
+    "success_count": 32,
+    "usage_count": 36
+  }
+}

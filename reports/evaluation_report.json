@@ -1,0 +1,444 @@
+{
+  "dataset_path": "C:\\Users\\Dell\\Desktop\\Phase3-AI\\KDU-2026-AI\\sample_data\\queries.csv",
+  "total_cases": 8,
+  "summary": {
+    "category_accuracy": 1.0,
+    "complexity_accuracy": 1.0,
+    "response_type_accuracy": 1.0,
+    "overall_accuracy": 1.0,
+    "average_actual_cost_usd": 9.4e-05,
+    "total_actual_cost_usd": 0.000756,
+    "fallback_rate": 0.0,
+    "model_tier_distribution": {
+      "economy": 2,
+      "premium": 3,
+      "balanced": 3
+    }
+  },
+  "results": [
+    {
+      "query_id": "eval-1",
+      "query": "What are your hours?",
+      "expected": {
+        "category": "FAQ",
+        "complexity": "low",
+        "expected_response_type": "simple"
+      },
+      "actual": {
+        "category": "FAQ",
+        "complexity": "low",
+        "predicted_response_type": "simple",
+        "model_tier": "economy",
+        "model_id": "gemini-2.5-flash-lite",
+        "prompt_key": "faq",
+        "prompt_version": 1,
+        "mode": "normal",
+        "estimated_cost": 7e-06,
+        "actual_cost": 7e-06
+      },
+      "matches": {
+        "category": true,
+        "complexity": true,
+        "response_type": true,
+        "overall": true
+      },
+      "metadata": {
+        "confidence": 0.85,
+        "budget_reason": null,
+        "projected_daily_total": 7e-06,
+        "projected_monthly_total": 7e-06,
+        "usage_details": {
+          "prompt_tokens": 22,
+          "completion_tokens": 12,
+          "total_tokens": 34,
+          "latency_ms": 0.021
+        },
+        "route_adjustment_reason": null,
+        "prompt_fallback_reason": null,
+        "generation_fallback_reason": null,
+        "final_response_source": "mock",
+        "prompt_runtime_metadata": {
+          "usage_count": 12,
+          "success_count": 12,
+          "failure_count": 0,
+          "last_used_at": "2026-04-19T10:29:03.879856+00:00",
+          "average_cost_usd": 0.00031,
+          "average_latency_ms": 0.022,
+          "evaluation_score": null
+        }
+      },
+      "response_text": "Response: handled as FAQ using gemini-2.5-flash-lite. Customer query: What are your hours?"
+    },
+    {
+      "query_id": "eval-2",
+      "query": "My plumber didn't show up, need refund",
+      "expected": {
+        "category": "complaint",
+        "complexity": "high",
+        "expected_response_type": "complex"
+      },
+      "actual": {
+        "category": "complaint",
+        "complexity": "high",
+        "predicted_response_type": "complex",
+        "model_tier": "premium",
+        "model_id": "gemini-2.5-pro",
+        "prompt_key": "complaint",
+        "prompt_version": 1,
+        "mode": "normal",
+        "estimated_cost": 0.000184,
+        "actual_cost": 0.000184
+      },
+      "matches": {
+        "category": true,
+        "complexity": true,
+        "response_type": true,
+        "overall": true
+      },
+      "metadata": {
+        "confidence": 0.92,
+        "budget_reason": null,
+        "projected_daily_total": 0.000191,
+        "projected_monthly_total": 0.000191,
+        "usage_details": {
+          "prompt_tokens": 27,
+          "completion_tokens": 15,
+          "total_tokens": 42,
+          "latency_ms": 0.018
+        },
+        "route_adjustment_reason": null,
+        "prompt_fallback_reason": null,
+        "generation_fallback_reason": null,
+        "final_response_source": "mock",
+        "prompt_runtime_metadata": {
+          "usage_count": 12,
+          "success_count": 12,
+          "failure_count": 0,
+          "last_used_at": "2026-04-19T10:29:03.881712+00:00",
+          "average_cost_usd": 0.005316,
+          "average_latency_ms": 0.026,
+          "evaluation_score": null
+        }
+      },
+      "response_text": "Response: handled as complaint using gemini-2.5-pro. Customer query: My plumber didn't show up, need refund"
+    },
+    {
+      "query_id": "eval-3",
+      "query": "Can I reschedule my cleaning appointment?",
+      "expected": {
+        "category": "booking",
+        "complexity": "medium",
+        "expected_response_type": "standard"
+      },
+      "actual": {
+        "category": "booking",
+        "complexity": "medium",
+        "predicted_response_type": "standard",
+        "model_tier": "balanced",
+        "model_id": "gemini-2.5-flash",
+        "prompt_key": "booking",
+        "prompt_version": 1,
+        "mode": "normal",
+        "estimated_cost": 4.3e-05,
+        "actual_cost": 4.3e-05
+      },
+      "matches": {
+        "category": true,
+        "complexity": true,
+        "response_type": true,
+        "overall": true
+      },
+      "metadata": {
+        "confidence": 0.88,
+        "budget_reason": null,
+        "projected_daily_total": 0.000234,
+        "projected_monthly_total": 0.000234,
+        "usage_details": {
+          "prompt_tokens": 25,
+          "completion_tokens": 14,
+          "total_tokens": 39,
+          "latency_ms": 0.031
+        },
+        "route_adjustment_reason": null,
+        "prompt_fallback_reason": null,
+        "generation_fallback_reason": null,
+        "final_response_source": "mock",
+        "prompt_runtime_metadata": {
+          "usage_count": 6,
+          "success_count": 6,
+          "failure_count": 0,
+          "last_used_at": "2026-04-19T10:29:03.883650+00:00",
+          "average_cost_usd": 0.000189,
+          "average_latency_ms": 0.018,
+          "evaluation_score": null
+        }
+      },
+      "response_text": "Response: handled as booking using gemini-2.5-flash. Customer query: Can I reschedule my cleaning appointment?"
+    },
+    {
+      "query_id": "eval-4",
+      "query": "Do you service apartments in Colombo?",
+      "expected": {
+        "category": "FAQ",
+        "complexity": "low",
+        "expected_response_type": "simple"
+      },
+      "actual": {
+        "category": "FAQ",
+        "complexity": "low",
+        "predicted_response_type": "simple",
+        "model_tier": "economy",
+        "model_id": "gemini-2.5-flash-lite",
+        "prompt_key": "faq",
+        "prompt_version": 1,
+        "mode": "normal",
+        "estimated_cost": 8e-06,
+        "actual_cost": 8e-06
+      },
+      "matches": {
+        "category": true,
+        "complexity": true,
+        "response_type": true,
+        "overall": true
+      },
+      "metadata": {
+        "confidence": 0.85,
+        "budget_reason": null,
+        "projected_daily_total": 0.000242,
+        "projected_monthly_total": 0.000242,
+        "usage_details": {
+          "prompt_tokens": 24,
+          "completion_tokens": 14,
+          "total_tokens": 38,
+          "latency_ms": 0.021
+        },
+        "route_adjustment_reason": null,
+        "prompt_fallback_reason": null,
+        "generation_fallback_reason": null,
+        "final_response_source": "mock",
+        "prompt_runtime_metadata": {
+          "usage_count": 13,
+          "success_count": 13,
+          "failure_count": 0,
+          "last_used_at": "2026-04-19T10:29:03.886360+00:00",
+          "average_cost_usd": 0.000287,
+          "average_latency_ms": 0.022,
+          "evaluation_score": null
+        }
+      },
+      "response_text": "Response: handled as FAQ using gemini-2.5-flash-lite. Customer query: Do you service apartments in Colombo?"
+    },
+    {
+      "query_id": "eval-5",
+      "query": "The electrician damaged my wall and no one replied",
+      "expected": {
+        "category": "complaint",
+        "complexity": "high",
+        "expected_response_type": "complex"
+      },
+      "actual": {
+        "category": "complaint",
+        "complexity": "high",
+        "predicted_response_type": "complex",
+        "model_tier": "premium",
+        "model_id": "gemini-2.5-pro",
+        "prompt_key": "complaint",
+        "prompt_version": 1,
+        "mode": "normal",
+        "estimated_cost": 0.000206,
+        "actual_cost": 0.000206
+      },
+      "matches": {
+        "category": true,
+        "complexity": true,
+        "response_type": true,
+        "overall": true
+      },
+      "metadata": {
+        "confidence": 0.92,
+        "budget_reason": null,
+        "projected_daily_total": 0.000448,
+        "projected_monthly_total": 0.000448,
+        "usage_details": {
+          "prompt_tokens": 29,
+          "completion_tokens": 17,
+          "total_tokens": 46,
+          "latency_ms": 0.016
+        },
+        "route_adjustment_reason": null,
+        "prompt_fallback_reason": null,
+        "generation_fallback_reason": null,
+        "final_response_source": "mock",
+        "prompt_runtime_metadata": {
+          "usage_count": 13,
+          "success_count": 13,
+          "failure_count": 0,
+          "last_used_at": "2026-04-19T10:29:03.888148+00:00",
+          "average_cost_usd": 0.004923,
+          "average_latency_ms": 0.025,
+          "evaluation_score": null
+        }
+      },
+      "response_text": "Response: handled as complaint using gemini-2.5-pro. Customer query: The electrician damaged my wall and no one replied"
+    },
+    {
+      "query_id": "eval-6",
+      "query": "Can I move my booking from Friday to Saturday morning?",
+      "expected": {
+        "category": "booking",
+        "complexity": "medium",
+        "expected_response_type": "standard"
+      },
+      "actual": {
+        "category": "booking",
+        "complexity": "medium",
+        "predicted_response_type": "standard",
+        "model_tier": "balanced",
+        "model_id": "gemini-2.5-flash",
+        "prompt_key": "booking",
+        "prompt_version": 1,
+        "mode": "normal",
+        "estimated_cost": 5.4e-05,
+        "actual_cost": 5.4e-05
+      },
+      "matches": {
+        "category": true,
+        "complexity": true,
+        "response_type": true,
+        "overall": true
+      },
+      "metadata": {
+        "confidence": 0.88,
+        "budget_reason": null,
+        "projected_daily_total": 0.000502,
+        "projected_monthly_total": 0.000502,
+        "usage_details": {
+          "prompt_tokens": 29,
+          "completion_tokens": 18,
+          "total_tokens": 47,
+          "latency_ms": 0.016
+        },
+        "route_adjustment_reason": null,
+        "prompt_fallback_reason": null,
+        "generation_fallback_reason": null,
+        "final_response_source": "mock",
+        "prompt_runtime_metadata": {
+          "usage_count": 7,
+          "success_count": 7,
+          "failure_count": 0,
+          "last_used_at": "2026-04-19T10:29:03.889692+00:00",
+          "average_cost_usd": 0.00017,
+          "average_latency_ms": 0.018,
+          "evaluation_score": null
+        }
+      },
+      "response_text": "Response: handled as booking using gemini-2.5-flash. Customer query: Can I move my booking from Friday to Saturday morning?"
+    },
+    {
+      "query_id": "eval-7",
+      "query": "I need help and I'm not sure whether to cancel or reschedule",
+      "expected": {
+        "category": "booking",
+        "complexity": "medium",
+        "expected_response_type": "standard"
+      },
+      "actual": {
+        "category": "booking",
+        "complexity": "medium",
+        "predicted_response_type": "standard",
+        "model_tier": "balanced",
+        "model_id": "gemini-2.5-flash",
+        "prompt_key": "booking",
+        "prompt_version": 1,
+        "mode": "normal",
+        "estimated_cost": 5.9e-05,
+        "actual_cost": 5.9e-05
+      },
+      "matches": {
+        "category": true,
+        "complexity": true,
+        "response_type": true,
+        "overall": true
+      },
+      "metadata": {
+        "confidence": 0.6,
+        "budget_reason": null,
+        "projected_daily_total": 0.000561,
+        "projected_monthly_total": 0.000561,
+        "usage_details": {
+          "prompt_tokens": 31,
+          "completion_tokens": 20,
+          "total_tokens": 51,
+          "latency_ms": 0.016
+        },
+        "route_adjustment_reason": null,
+        "prompt_fallback_reason": null,
+        "generation_fallback_reason": null,
+        "final_response_source": "mock",
+        "prompt_runtime_metadata": {
+          "usage_count": 8,
+          "success_count": 8,
+          "failure_count": 0,
+          "last_used_at": "2026-04-19T10:29:03.891191+00:00",
+          "average_cost_usd": 0.000156,
+          "average_latency_ms": 0.018,
+          "evaluation_score": null
+        }
+      },
+      "response_text": "Response: handled as booking using gemini-2.5-flash. Customer query: I need help and I'm not sure whether to cancel or reschedule"
+    },
+    {
+      "query_id": "eval-8",
+      "query": "Your service was terrible and I want compensation",
+      "expected": {
+        "category": "complaint",
+        "complexity": "high",
+        "expected_response_type": "complex"
+      },
+      "actual": {
+        "category": "complaint",
+        "complexity": "high",
+        "predicted_response_type": "complex",
+        "model_tier": "premium",
+        "model_id": "gemini-2.5-pro",
+        "prompt_key": "complaint",
+        "prompt_version": 1,
+        "mode": "normal",
+        "estimated_cost": 0.000195,
+        "actual_cost": 0.000195
+      },
+      "matches": {
+        "category": true,
+        "complexity": true,
+        "response_type": true,
+        "overall": true
+      },
+      "metadata": {
+        "confidence": 0.92,
+        "budget_reason": null,
+        "projected_daily_total": 0.000756,
+        "projected_monthly_total": 0.000756,
+        "usage_details": {
+          "prompt_tokens": 28,
+          "completion_tokens": 16,
+          "total_tokens": 44,
+          "latency_ms": 0.016
+        },
+        "route_adjustment_reason": null,
+        "prompt_fallback_reason": null,
+        "generation_fallback_reason": null,
+        "final_response_source": "mock",
+        "prompt_runtime_metadata": {
+          "usage_count": 14,
+          "success_count": 14,
+          "failure_count": 0,
+          "last_used_at": "2026-04-19T10:29:03.893147+00:00",
+          "average_cost_usd": 0.004585,
+          "average_latency_ms": 0.024,
+          "evaluation_score": null
+        }
+      },
+      "response_text": "Response: handled as complaint using gemini-2.5-pro. Customer query: Your service was terrible and I want compensation"
+    }
+  ]
+}

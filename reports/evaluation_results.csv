@@ -1,0 +1,9 @@
+query_id,query,expected_category,actual_category,expected_complexity,actual_complexity,expected_response_type,predicted_response_type,model_tier,model_id,mode,estimated_cost,actual_cost,overall_match
+eval-1,What are your hours?,FAQ,FAQ,low,low,simple,simple,economy,gemini-2.5-flash-lite,normal,7e-06,7e-06,True
+eval-2,"My plumber didn't show up, need refund",complaint,complaint,high,high,complex,complex,premium,gemini-2.5-pro,normal,0.000184,0.000184,True
+eval-3,Can I reschedule my cleaning appointment?,booking,booking,medium,medium,standard,standard,balanced,gemini-2.5-flash,normal,4.3e-05,4.3e-05,True
+eval-4,Do you service apartments in Colombo?,FAQ,FAQ,low,low,simple,simple,economy,gemini-2.5-flash-lite,normal,8e-06,8e-06,True
+eval-5,The electrician damaged my wall and no one replied,complaint,complaint,high,high,complex,complex,premium,gemini-2.5-pro,normal,0.000206,0.000206,True
+eval-6,Can I move my booking from Friday to Saturday morning?,booking,booking,medium,medium,standard,standard,balanced,gemini-2.5-flash,normal,5.4e-05,5.4e-05,True
+eval-7,I need help and I'm not sure whether to cancel or reschedule,booking,booking,medium,medium,standard,standard,balanced,gemini-2.5-flash,normal,5.9e-05,5.9e-05,True
+eval-8,Your service was terrible and I want compensation,complaint,complaint,high,high,complex,complex,premium,gemini-2.5-pro,normal,0.000195,0.000195,True
