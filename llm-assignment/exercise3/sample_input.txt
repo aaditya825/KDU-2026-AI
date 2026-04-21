@@ -1,0 +1,11 @@
+Tri-model assistants are useful when a single document must support more than one kind of user interaction. One model can compress the source, another can rewrite the result at different lengths, and a third can answer follow-up questions grounded in the stored text.
+
+The document context for this exercise should be long enough to show real differences between the summary lengths. A short result should capture only the main idea. A medium result should keep the key structure and the important supporting details. A long result should preserve more of the original nuance, including goals, constraints, and any trade-offs that are mentioned.
+
+For testing, the source text should contain several separate themes. It should include a problem statement, the expected behavior of the system, a description of the router, and at least one section that explains risks or limitations. That makes it easier to tell whether the assistant is actually responding to the requested summary length instead of repeating the same sentence.
+
+The assistant should also be able to answer grounded questions after summary generation. For example, a user might ask what problem is being solved, why the router is needed, what could go wrong if the context is too small, or which component is responsible for preserving state across turns.
+
+In a real deployment, the system should be evaluated on more than one sample. One input can be a technical requirements document, another can be a short policy note, and another can be a mixed paragraph with both procedural and explanatory text. That helps verify that summarization, refinement, and QA all work across different writing styles.
+
+This sample text is intentionally more detailed than the original version so the application can produce visibly different short, medium, and long refinements. It also gives the QA model enough content to answer document-specific questions without needing outside knowledge.
