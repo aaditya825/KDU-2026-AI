@@ -1,0 +1,3 @@
+Extract all readable text from this image.
+Also describe important visual information needed for accessibility.
+Return structured plain text only. Do not add commentary or opinions.

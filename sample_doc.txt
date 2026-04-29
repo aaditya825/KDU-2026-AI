@@ -1,0 +1,14 @@
+Content Accessibility Suite — Sample Document
+==============================================
+
+This is a sample plain-text file used to smoke-test Phase 1 ingestion.
+
+Key Topics
+----------
+- Multi-modal content processing
+- PDF, image, and audio file support
+- Semantic search with vector embeddings
+- Model comparison: local vs cloud
+
+The system prioritises local-first processing using free models wherever
+possible, with optional cloud provider integration via environment variables.

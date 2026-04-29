@@ -1,0 +1,39 @@
+# Content Accessibility Suite - Python dependencies
+# Install with: pip install -r requirements.txt
+
+# Core utilities
+python-dotenv>=1.0.0
+click>=8.1.0
+
+# File type detection
+python-magic>=0.4.27
+
+# PDF extraction (Phase 2)
+pdfminer.six>=20221105
+pymupdf>=1.23.0
+Pillow>=10.0.0
+
+# OCR (Phase 2)
+pytesseract>=0.3.10
+
+# Audio transcription (Phase 2)
+faster-whisper>=1.0.0
+mutagen>=1.47.0
+
+# LLM / cloud providers (Phase 2)
+openai>=1.30.0
+google-genai>=1.0.0
+requests>=2.31.0
+
+# Embeddings (Phase 3)
+sentence-transformers>=2.7.0
+
+# Vector DB (Phase 3)
+chromadb>=0.5.0
+
+# Testing
+pytest>=8.0.0
+pytest-cov>=5.0.0
+
+# UI (Phase 4 only)
+streamlit>=1.35.0
