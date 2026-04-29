@@ -17,6 +17,7 @@ import textwrap
 import click
 
 from app.config.settings import settings
+from app.utils.exceptions import format_user_error
 
 settings.configure_logging()
 
@@ -90,7 +91,7 @@ def ingest_command(file_path: str) -> None:
     try:
         meta = controller.ingest_file(file_path)
     except Exception as exc:
-        click.echo(click.style(f"\nERROR: Ingestion failed: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Ingestion failed')}", fg="red"), err=True)
         sys.exit(1)
 
     click.echo("")
@@ -121,10 +122,10 @@ def process_command(file_id: str) -> None:
     try:
         result = controller.process_file(file_id)
     except ValueError as exc:
-        click.echo(click.style(f"\nERROR: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Processing failed')}", fg="red"), err=True)
         sys.exit(1)
     except Exception as exc:
-        click.echo(click.style(f"\nERROR: Processing failed: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Processing failed')}", fg="red"), err=True)
         sys.exit(1)
 
     extraction = result.extraction
@@ -184,10 +185,10 @@ def search_command(query: str, file_id: str | None, top_k: int) -> None:
     try:
         results = controller.search(file_id=file_id, query=query, top_k=top_k)
     except ValueError as exc:
-        click.echo(click.style(f"\nERROR: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Search failed')}", fg="red"), err=True)
         sys.exit(1)
     except Exception as exc:
-        click.echo(click.style(f"\nERROR: Search failed: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Search failed')}", fg="red"), err=True)
         sys.exit(1)
 
     if not results:
@@ -237,10 +238,10 @@ def ask_command(question: str, file_id: str | None, top_k: int) -> None:
     try:
         answer_result = controller.answer(file_id=file_id, question=question, top_k=top_k)
     except ValueError as exc:
-        click.echo(click.style(f"\nERROR: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Q&A failed')}", fg="red"), err=True)
         sys.exit(1)
     except Exception as exc:
-        click.echo(click.style(f"\nERROR: Q&A failed: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Q&A failed')}", fg="red"), err=True)
         sys.exit(1)
 
     _render_answer(answer_result)
@@ -265,10 +266,10 @@ def query_command(question: str, file_id: str | None, top_k: int) -> None:
     try:
         answer_result = controller.answer(file_id=file_id, question=question, top_k=top_k)
     except ValueError as exc:
-        click.echo(click.style(f"\nERROR: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Query failed')}", fg="red"), err=True)
         sys.exit(1)
     except Exception as exc:
-        click.echo(click.style(f"\nERROR: Query failed: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Query failed')}", fg="red"), err=True)
         sys.exit(1)
 
     _render_answer(answer_result)
@@ -286,10 +287,10 @@ def compare_command(file_id: str) -> None:
     try:
         report = controller.compare(file_id)
     except ValueError as exc:
-        click.echo(click.style(f"\nERROR: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Comparison failed')}", fg="red"), err=True)
         sys.exit(1)
     except Exception as exc:
-        click.echo(click.style(f"\nERROR: Comparison failed: {exc}", fg="red"), err=True)
+        click.echo(click.style(f"\nERROR: {format_user_error(exc, prefix='Comparison failed')}", fg="red"), err=True)
         sys.exit(1)
 
     click.echo("")

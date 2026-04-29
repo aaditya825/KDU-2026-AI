@@ -20,7 +20,7 @@ Run verification:
 python -m pytest -q -p no:cacheprovider
 ```
 
-Last known result: `11 passed`.
+Last known result: `17 passed`.
 
 ---
 
@@ -206,6 +206,10 @@ MAX_PDF_PAGES=200
 MAX_IMAGE_PIXELS=40000000
 MAX_QUERY_CHARS=1000
 MAX_RETRIEVAL_TOP_K=20
+MAX_PROCESSING_SECONDS=300
+MAX_OCR_SECONDS=60
+MAX_AUDIO_TRANSCRIPTION_SECONDS=600
+MAX_PATH_CHARS=240
 ```
 
 No `GROQ_API_KEY` or `OPENROUTER_API_KEY` should be added back.
@@ -263,6 +267,11 @@ Coverage currently includes:
 
 - MIME-based file type routing
 - unsupported content rejection
+- corrupt PDF/image rejection
+- unreadable audio metadata rejection
+- meaningless query rejection
+- low-confidence evidence handling
+- report export error handling
 - processing persistence fields
 - chunk page metadata
 - retrieval re-index fallback

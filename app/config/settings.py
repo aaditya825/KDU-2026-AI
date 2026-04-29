@@ -22,7 +22,11 @@ from app.config.model_registry import (
     DEFAULT_LLM_MODEL,
     DEFAULT_LLM_PROVIDER,
     DEFAULT_MAX_IMAGE_PIXELS,
+    DEFAULT_MAX_AUDIO_TRANSCRIPTION_SECONDS,
+    DEFAULT_MAX_OCR_SECONDS,
+    DEFAULT_MAX_PATH_CHARS,
     DEFAULT_MAX_PDF_PAGES,
+    DEFAULT_MAX_PROCESSING_SECONDS,
     DEFAULT_MAX_QUERY_CHARS,
     DEFAULT_MAX_RETRIEVAL_TOP_K,
     DEFAULT_VISION_PROVIDER,
@@ -77,6 +81,21 @@ class Settings:
     )
     max_retrieval_top_k: int = field(
         default_factory=lambda: _env_int("MAX_RETRIEVAL_TOP_K", DEFAULT_MAX_RETRIEVAL_TOP_K)
+    )
+    max_processing_seconds: int = field(
+        default_factory=lambda: _env_int("MAX_PROCESSING_SECONDS", DEFAULT_MAX_PROCESSING_SECONDS)
+    )
+    max_ocr_seconds: int = field(
+        default_factory=lambda: _env_int("MAX_OCR_SECONDS", DEFAULT_MAX_OCR_SECONDS)
+    )
+    max_audio_transcription_seconds: int = field(
+        default_factory=lambda: _env_int(
+            "MAX_AUDIO_TRANSCRIPTION_SECONDS",
+            DEFAULT_MAX_AUDIO_TRANSCRIPTION_SECONDS,
+        )
+    )
+    max_path_chars: int = field(
+        default_factory=lambda: _env_int("MAX_PATH_CHARS", DEFAULT_MAX_PATH_CHARS)
     )
 
     # ── Model defaults ──

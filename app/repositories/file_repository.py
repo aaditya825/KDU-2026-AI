@@ -20,6 +20,7 @@ from typing import Optional
 
 from app.config.settings import settings
 from app.models.domain import FileMetadata, FileStatus, FileType
+from app.utils.exceptions import DatabaseError, classify_sqlite_error
 from app.utils.logging_utils import get_logger
 
 log = get_logger(__name__)
@@ -117,7 +118,7 @@ def resolve_sqlite_db_path(configured: Optional[Path] = None) -> Path:
             fallback,
         )
         return fallback
-    raise RuntimeError(
+    raise DatabaseError(
         f"Unable to open writable SQLite database at '{target}' or fallback '{fallback}'."
     )
 
@@ -130,19 +131,22 @@ class FileRepository:
         self._init_schema()
 
     def _connect(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(str(self._db_path))
+        conn = sqlite3.connect(str(self._db_path), timeout=10.0)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA journal_mode=DELETE;")
         conn.execute("PRAGMA foreign_keys=ON;")
         return conn
 
     def _init_schema(self) -> None:
-        with self._connect() as conn:
-            conn.execute(_CREATE_FILES_TABLE)
-            conn.execute(_CREATE_PROCESSED_TABLE)
-            conn.execute(_CREATE_CHUNKS_TABLE)
-            conn.execute(_CREATE_METRICS_TABLE)
-            self._migrate_processed_outputs(conn)
+        try:
+            with self._connect() as conn:
+                conn.execute(_CREATE_FILES_TABLE)
+                conn.execute(_CREATE_PROCESSED_TABLE)
+                conn.execute(_CREATE_CHUNKS_TABLE)
+                conn.execute(_CREATE_METRICS_TABLE)
+                self._migrate_processed_outputs(conn)
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         log.debug("SQLite schema initialised", extra={"db": str(self._db_path)})
 
     @staticmethod
@@ -163,50 +167,67 @@ class FileRepository:
 
     def insert(self, meta: FileMetadata) -> None:
         now = datetime.datetime.utcnow().isoformat()
-        with self._connect() as conn:
-            conn.execute(
-                """
-                INSERT INTO files
-                    (file_id, original_name, stored_path, file_type, mime_type,
-                     size_bytes, status, created_at, updated_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    meta.file_id,
-                    meta.original_name,
-                    meta.stored_path,
-                    meta.file_type.value,
-                    meta.mime_type,
-                    meta.size_bytes,
-                    meta.status.value,
-                    meta.created_at.isoformat(),
-                    now,
-                ),
-            )
+        try:
+            with self._connect() as conn:
+                conn.execute(
+                    """
+                    INSERT INTO files
+                        (file_id, original_name, stored_path, file_type, mime_type,
+                         size_bytes, status, created_at, updated_at)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        meta.file_id,
+                        meta.original_name,
+                        meta.stored_path,
+                        meta.file_type.value,
+                        meta.mime_type,
+                        meta.size_bytes,
+                        meta.status.value,
+                        meta.created_at.isoformat(),
+                        now,
+                    ),
+                )
+        except sqlite3.IntegrityError as exc:
+            raise DatabaseError(
+                f"File metadata insert failed for '{meta.file_id}'.",
+                remediation="A duplicate file id or corrupted DB state was detected; retry the ingest.",
+            ) from exc
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         log.info("File metadata persisted", extra={"file_id": meta.file_id})
 
     def update_status(self, file_id: str, status: FileStatus) -> None:
         now = datetime.datetime.utcnow().isoformat()
-        with self._connect() as conn:
-            conn.execute(
-                "UPDATE files SET status = ?, updated_at = ? WHERE file_id = ?",
-                (status.value, now, file_id),
-            )
+        try:
+            with self._connect() as conn:
+                conn.execute(
+                    "UPDATE files SET status = ?, updated_at = ? WHERE file_id = ?",
+                    (status.value, now, file_id),
+                )
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
 
     def get(self, file_id: str) -> Optional[FileMetadata]:
-        with self._connect() as conn:
-            row = conn.execute(
-                "SELECT * FROM files WHERE file_id = ?", (file_id,)
-            ).fetchone()
+        try:
+            with self._connect() as conn:
+                row = conn.execute(
+                    "SELECT * FROM files WHERE file_id = ?", (file_id,)
+                ).fetchone()
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         if row is None:
             return None
         return self._row_to_metadata(dict(row))
 
     def list_all(self) -> list[FileMetadata]:
-        with self._connect() as conn:
-            rows = conn.execute(
-                "SELECT * FROM files ORDER BY created_at DESC"
-            ).fetchall()
+        try:
+            with self._connect() as conn:
+                rows = conn.execute(
+                    "SELECT * FROM files ORDER BY created_at DESC"
+                ).fetchall()
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         return [self._row_to_metadata(dict(r)) for r in rows]
 
     @staticmethod

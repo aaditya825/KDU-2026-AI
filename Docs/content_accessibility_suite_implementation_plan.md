@@ -44,6 +44,7 @@ Groq and OpenRouter are intentionally not supported in the current implementatio
 | Audio extraction | `faster-whisper` default; `whisper` fallback. |
 | Models | Model IDs are centralized in `app/config/model_registry.py`; runtime code must not hardcode provider model names. |
 | Input limits | File size, PDF pages, image pixels, audio duration, query length, retrieval `top_k`, LLM context caps, and embedding chunk sizes are centralized and enforced before expensive work where possible. |
+| Exception handling | Corrupt files, missing dependencies, DB/vector/model failures, timeout conditions, no-speech audio, low-confidence evidence, meaningless queries, and report write failures are converted into controlled errors or warnings. |
 | Cloud providers | Only Gemini and OpenAI are supported; Gemini is default. |
 | Embeddings | Sentence Transformers local embeddings are default. If embedding/vector search fails, query falls back to keyword search over stored chunks. |
 | Vector store | Chroma stores chunk vectors per file. Missing/partial vector collections trigger re-index from SQLite chunks. |

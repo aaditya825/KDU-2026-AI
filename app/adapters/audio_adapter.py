@@ -20,10 +20,30 @@ from app.config.model_registry import (
     DEFAULT_AUDIO_MODEL,
     DEFAULT_AUDIO_MODEL_SIZE,
 )
+from app.config.settings import settings
 from app.models.domain import ExtractionMethod, ExtractionResult
 from app.utils.logging_utils import get_logger
 
 log = get_logger(__name__)
+
+
+def _audio_failure_warning(exc: Exception, engine: str) -> str:
+    msg = str(exc)
+    lowered = msg.lower()
+    if "ffmpeg" in lowered:
+        return (
+            f"{engine} could not decode the audio because FFmpeg is missing or unavailable. "
+            "Install FFmpeg or re-encode the audio to MP3/WAV."
+        )
+    if "codec" in lowered or "decode" in lowered or "invalid data" in lowered:
+        return (
+            f"{engine} could not decode this audio. The file may be corrupt or use an unsupported codec."
+        )
+    if "timeout" in lowered or "timed out" in lowered:
+        return f"{engine} transcription timed out."
+    if isinstance(exc, MemoryError) or "memory" in lowered or "out of memory" in lowered:
+        return f"{engine} ran out of memory while transcribing. Use a shorter file or smaller model."
+    return f"{engine} transcription failed: {msg}"
 
 
 class FasterWhisperAdapter(AudioModelAdapter):
@@ -58,6 +78,10 @@ class FasterWhisperAdapter(AudioModelAdapter):
             if not raw_text:
                 warnings.append("No speech detected in audio.")
                 confidence = 0.1
+            if time.monotonic() - t0 > settings.max_audio_transcription_seconds:
+                warnings.append(
+                    f"Audio transcription exceeded {settings.max_audio_transcription_seconds} seconds."
+                )
         except ImportError:
             return ExtractionResult(
                 raw_text="",
@@ -72,7 +96,7 @@ class FasterWhisperAdapter(AudioModelAdapter):
                 raw_text="",
                 confidence=0.0,
                 method=ExtractionMethod.FASTER_WHISPER,
-                warnings=[str(exc)],
+                warnings=[_audio_failure_warning(exc, "faster-whisper")],
                 latency_ms=int((time.monotonic() - t0) * 1000),
             )
 
@@ -114,6 +138,10 @@ class WhisperAdapter(AudioModelAdapter):
             confidence = 0.8 if raw_text else 0.1
             if not raw_text:
                 warnings.append("No speech detected in audio.")
+            if time.monotonic() - t0 > settings.max_audio_transcription_seconds:
+                warnings.append(
+                    f"Audio transcription exceeded {settings.max_audio_transcription_seconds} seconds."
+                )
         except ImportError:
             return ExtractionResult(
                 raw_text="",
@@ -128,7 +156,7 @@ class WhisperAdapter(AudioModelAdapter):
                 raw_text="",
                 confidence=0.0,
                 method=ExtractionMethod.WHISPER,
-                warnings=[str(exc)],
+                warnings=[_audio_failure_warning(exc, "whisper")],
                 latency_ms=int((time.monotonic() - t0) * 1000),
             )
 

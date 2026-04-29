@@ -17,6 +17,7 @@ from app.pipelines.content_router import ContentRouter
 from app.repositories.file_repository import FileRepository
 from app.repositories.processing_repository import ProcessingRepository
 from app.services.post_processor import PostProcessor
+from app.utils.exceptions import ProcessingError
 from app.utils.logging_utils import get_logger
 from app.utils.timing import Timer
 
@@ -81,9 +82,13 @@ class ProcessingController:
 
                 if not extraction.raw_text.strip():
                     self._file_repo.update_status(file_id, FileStatus.FAILED)
-                    raise RuntimeError(
-                        f"Extraction produced no text for file '{file_id}'. "
-                        f"Warnings: {extraction.warnings}"
+                    warning_text = "; ".join(extraction.warnings) or "No extraction warnings were provided."
+                    raise ProcessingError(
+                        f"Extraction produced no usable text for file '{file_id}'.",
+                        remediation=(
+                            "Check whether the document is blank, password-protected, too blurry, silent, "
+                            f"corrupt, or missing required system dependencies. Warnings: {warning_text}"
+                        ),
                     )
 
                 result = self._post_processor.process(file_id, extraction)

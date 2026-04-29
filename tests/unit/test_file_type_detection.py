@@ -24,6 +24,7 @@ def test_validator_accepts_supported_content_even_with_wrong_extension(
         "app.services.file_validator.detect_mime_type",
         lambda file_path, original_name: ("application/pdf", True),
     )
+    monkeypatch.setattr("app.services.file_validator.FileValidator._check_pdf_page_count", lambda self, file_path: None)
 
     FileValidator().validate(path, path.name)
 

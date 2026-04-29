@@ -28,6 +28,12 @@ Current user flow:
 | Storage | Local file copy and path management. |
 | Config | Settings and centralized model registry. |
 
+### Architecture Diagram
+
+![High-level architecture and request flow](high_level_Arch.png)
+
+The diagram shows the main app layers, request flow, model/adaptor boundaries, and storage choices. The implementation details below expand each layer.
+
 ---
 
 ## 3. Implemented Decisions
@@ -474,6 +480,10 @@ MAX_PDF_PAGES=200
 MAX_IMAGE_PIXELS=40000000
 MAX_QUERY_CHARS=1000
 MAX_RETRIEVAL_TOP_K=20
+MAX_PROCESSING_SECONDS=300
+MAX_OCR_SECONDS=60
+MAX_AUDIO_TRANSCRIPTION_SECONDS=600
+MAX_PATH_CHARS=240
 
 DEFAULT_VECTOR_STORE=chroma
 DEFAULT_EMBEDDING_MODEL=all-MiniLM-L6-v2
@@ -494,6 +504,20 @@ LOG_LEVEL=INFO
 |---|---|
 | Unsupported content | Rejected by MIME type during validation. |
 | Missing libmagic | Falls back to filename-based MIME guessing. |
+| Corrupt/password PDF | Rejected before processing, or returned as failed extraction with actionable warning. |
+| Zero-page PDF | Rejected before processing. |
+| Slow PDF/OCR processing | Bounded by processing/OCR timeout settings; partial extraction is marked with warnings where possible. |
+| Corrupt image | Rejected before processing when Pillow cannot open/verify it. |
+| Blank/low-contrast image | Surfaced as OCR warning; no-text results fail processing with a user-facing explanation. |
+| Unsupported audio codec/corrupt audio | Rejected when metadata is unreadable; transcription decode failures produce actionable warnings. |
+| No speech/silent audio | Processing fails with no-text warning instead of silently succeeding. |
+| Missing Tesseract | OCR returns a clear missing-dependency warning. |
+| Missing FFmpeg/audio decoder | Audio transcription returns a clear decode/dependency warning. |
+| Insufficient disk space / permissions | Storage errors are translated into actionable user-facing messages. |
+| SQLite locked/schema mismatch | Repository errors are translated into lock/schema/permission-specific messages. |
+| Chroma unavailable/corrupt | Semantic search degrades to SQLite keyword fallback. |
+| Embedding model download/load failure | Semantic retrieval degrades to keyword fallback when chunks exist. |
+| LLM API/auth/quota/rate/network/empty response | Generation falls back to local adapter where possible and records warning context. |
 | Empty extraction | File marked failed; persisted error detail. |
 | LLM package/key missing | Uses local fallback adapter. |
 | LLM API failure | Uses local fallback answer/message where possible. |
@@ -501,6 +525,9 @@ LOG_LEVEL=INFO
 | Missing vector collection | Re-indexes from SQLite chunks when possible. |
 | Empty processed records | Skipped during global query. |
 | Low-confidence extraction | Warning retained; uncertain chunks marked/filtered. |
+| Query only symbols/stopwords | Rejected before retrieval. |
+| Report/export write failure | `ReportService` raises controlled report export errors. |
+| Streamlit upload/temp cleanup failure | Displayed as UI error/warning without crashing the session. |
 
 ---
 

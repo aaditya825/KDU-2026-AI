@@ -15,6 +15,7 @@ from app.config.model_registry import (
     LLM_FALLBACK_ORDER,
     LLM_PROVIDER_MODELS,
 )
+from app.utils.exceptions import ModelProviderError, classify_external_error
 from app.utils.logging_utils import get_logger
 
 log = get_logger(__name__)
@@ -38,22 +39,39 @@ class GeminiAdapter(LLMAdapter):
         self.estimated_cost_per_1k = _COST_PER_1K["gemini"]
 
     def generate(self, prompt: str, max_tokens: int = 512) -> str:
+        if not self._api_key:
+            raise ModelProviderError(
+                "Gemini API key is missing.",
+                remediation="Set GEMINI_API_KEY in .env or use local fallback.",
+            )
         try:
             from google import genai
             from google.genai import types
         except ImportError as exc:
-            raise RuntimeError(f"google-genai package not installed: {exc}") from exc
+            raise ModelProviderError(
+                f"google-genai package not installed: {exc}",
+                remediation="Install dependencies with 'python -m pip install -r requirements.txt'.",
+            ) from exc
 
-        client = genai.Client(api_key=self._api_key)
-        response = client.models.generate_content(
-            model=self._model,
-            contents=prompt,
-            config=types.GenerateContentConfig(
-                max_output_tokens=max_tokens,
-                temperature=0.3,
-            ),
-        )
-        return response.text or ""
+        try:
+            client = genai.Client(api_key=self._api_key)
+            response = client.models.generate_content(
+                model=self._model,
+                contents=prompt,
+                config=types.GenerateContentConfig(
+                    max_output_tokens=max_tokens,
+                    temperature=0.3,
+                ),
+            )
+            text = response.text or ""
+        except Exception as exc:
+            raise classify_external_error(exc, provider="Gemini") from exc
+        if not text.strip():
+            raise ModelProviderError(
+                "Gemini returned an empty response.",
+                remediation="Retry or use a fallback provider.",
+            )
+        return text
 
 
 class OpenAIAdapter(LLMAdapter):
@@ -66,18 +84,29 @@ class OpenAIAdapter(LLMAdapter):
         self.estimated_cost_per_1k = _COST_PER_1K["openai"]
 
     def generate(self, prompt: str, max_tokens: int = 512) -> str:
+        if not self._api_key:
+            raise ModelProviderError(
+                "OpenAI API key is missing.",
+                remediation="Set OPENAI_API_KEY in .env or use local fallback.",
+            )
         try:
             from openai import OpenAI
         except ImportError as exc:
-            raise RuntimeError(f"openai package not installed: {exc}") from exc
+            raise ModelProviderError(
+                f"openai package not installed: {exc}",
+                remediation="Install dependencies with 'python -m pip install -r requirements.txt'.",
+            ) from exc
 
-        client = OpenAI(api_key=self._api_key)
-        response = client.responses.create(
-            model=self._model,
-            input=prompt,
-            max_output_tokens=max_tokens,
-        )
-        text = getattr(response, "output_text", "")
+        try:
+            client = OpenAI(api_key=self._api_key)
+            response = client.responses.create(
+                model=self._model,
+                input=prompt,
+                max_output_tokens=max_tokens,
+            )
+            text = getattr(response, "output_text", "")
+        except Exception as exc:
+            raise classify_external_error(exc, provider="OpenAI") from exc
         if text:
             return text
 
@@ -88,7 +117,13 @@ class OpenAIAdapter(LLMAdapter):
                 maybe_text = getattr(content, "text", "")
                 if maybe_text:
                     parts.append(maybe_text)
-        return "\n".join(parts)
+        final_text = "\n".join(parts)
+        if not final_text.strip():
+            raise ModelProviderError(
+                "OpenAI returned an empty or unsupported response shape.",
+                remediation="Retry, upgrade the OpenAI SDK, or use a fallback provider.",
+            )
+        return final_text
 
 
 class LocalFallbackAdapter(LLMAdapter):

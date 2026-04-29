@@ -76,6 +76,13 @@ def _build_context(chunks: list[SearchResult]) -> str:
     return "\n\n---\n\n".join(parts)
 
 
+def _context_was_truncated(chunks: list[SearchResult]) -> bool:
+    total = 0
+    for chunk in chunks:
+        total += len(f"[Chunk #{chunk.chunk_index}]\n{chunk.chunk_text}")
+    return total > DEFAULT_QA_CONTEXT_CHARS
+
+
 class AnswerService:
     """Generate grounded answers from retrieved document chunks."""
 
@@ -146,12 +153,17 @@ class AnswerService:
 
         insufficient = any(m in raw_answer.lower() for m in _INSUFFICIENT_MARKERS)
         has_low_conf = any(c.confidence < _LOW_CONF_THRESHOLD for c in relevant)
-        notes = ""
+        notes_parts: list[str] = []
         if has_low_conf:
-            notes = (
+            notes_parts.append(
                 "Some supporting chunks had low extraction confidence. "
                 "Verify key facts against the original document."
             )
+        if _context_was_truncated(relevant):
+            notes_parts.append(
+                "Retrieved context exceeded the configured limit and was truncated before the LLM call."
+            )
+        notes = " ".join(notes_parts)
 
         log.info(
             "Answer generated",

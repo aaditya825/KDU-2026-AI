@@ -7,6 +7,7 @@ Local-first multimodal accessibility app for PDFs, images, and audio. The app in
 - Phases 1-3 backend and CLI flow are implemented.
 - Phase 4 Streamlit UI is implemented for upload/process, ask/search, and model comparison.
 - Report/export generation under `reports/` is still pending.
+- Guardrails are implemented for corrupt/locked files, missing dependencies, DB/vector/model failures, oversized inputs, meaningless queries, and low-confidence evidence.
 
 ## Supported Inputs
 
@@ -73,6 +74,8 @@ Current tabs:
 python -m pytest -q -p no:cacheprovider
 python -m app.cli --help
 ```
+
+Last verified result: `17 passed`.
 
 ## Runtime Data
 

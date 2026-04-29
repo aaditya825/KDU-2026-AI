@@ -16,6 +16,7 @@ from pathlib import Path
 
 from app.adapters.base import VisionModelAdapter
 from app.adapters.ocr_adapter import OcrAdapter
+from app.config.settings import settings
 from app.models.domain import ExtractionMethod, ExtractionResult
 from app.utils.logging_utils import get_logger
 
@@ -55,7 +56,7 @@ class PDFProcessingPipeline:
                 raw_text="",
                 confidence=0.0,
                 method=ExtractionMethod.UNKNOWN,
-                warnings=[f"Failed to open PDF: {exc}"],
+                warnings=[f"Failed to open PDF. It may be corrupt or password-protected: {exc}"],
                 latency_ms=int((time.monotonic() - t0) * 1000),
             )
 
@@ -63,71 +64,119 @@ class PDFProcessingPipeline:
         methods_used: set[str] = set()
         page_confidences: list[float] = []
 
-        for page_num, page in enumerate(doc, start=1):
-            direct_text = page.get_text().strip()
-            page_header = f"[PAGE {page_num}]"
-
-            if len(direct_text) >= _MIN_CHARS_PER_PAGE:
-                all_texts.append(f"{page_header}\n{direct_text}")
-                page_confidences.append(1.0)
-                methods_used.add(ExtractionMethod.DIRECT_TEXT.value)
-                page_metadata.append(
-                    {"page": page_num, "method": "direct_text", "chars": len(direct_text)}
+        try:
+            if getattr(doc, "needs_pass", False) or getattr(doc, "is_encrypted", False):
+                return ExtractionResult(
+                    raw_text="",
+                    confidence=0.0,
+                    method=ExtractionMethod.UNKNOWN,
+                    warnings=["PDF is encrypted or password-protected; upload an unlocked PDF."],
+                    latency_ms=int((time.monotonic() - t0) * 1000),
                 )
-                continue
-
-            pix = page.get_pixmap(dpi=200)
-            img_path = Path(file_path).parent / f"_cas_page_{page_num}.png"
-            pix.save(str(img_path))
-            ocr_result = self._ocr.extract_text(str(img_path))
-            img_path.unlink(missing_ok=True)
-
-            if ocr_result.confidence >= _LOW_CONFIDENCE_THRESHOLD and ocr_result.raw_text.strip():
-                all_texts.append(f"{page_header}\n{ocr_result.raw_text}")
-                page_confidences.append(ocr_result.confidence)
-                methods_used.add(ExtractionMethod.OCR.value)
-                page_metadata.append(
-                    {"page": page_num, "method": "ocr", "confidence": ocr_result.confidence}
+            if doc.page_count <= 0:
+                return ExtractionResult(
+                    raw_text="",
+                    confidence=0.0,
+                    method=ExtractionMethod.UNKNOWN,
+                    warnings=["PDF has zero pages or no renderable pages."],
+                    latency_ms=int((time.monotonic() - t0) * 1000),
                 )
-                warnings.extend(ocr_result.warnings)
-                continue
 
-            if self._vision is not None:
-                pix2 = page.get_pixmap(dpi=200)
-                img_path2 = Path(file_path).parent / f"_cas_page_vis_{page_num}.png"
-                pix2.save(str(img_path2))
-                vision_result = self._vision.extract_text(str(img_path2), prompt="")
-                img_path2.unlink(missing_ok=True)
-
-                if vision_result.raw_text.strip():
-                    all_texts.append(f"{page_header}\n{vision_result.raw_text}")
-                    page_confidences.append(vision_result.confidence)
-                    methods_used.add(ExtractionMethod.VISION.value)
-                    page_metadata.append(
-                        {
-                            "page": page_num,
-                            "method": "vision",
-                            "confidence": vision_result.confidence,
-                        }
+            for page_num, page in enumerate(doc, start=1):
+                if time.monotonic() - t0 > settings.max_processing_seconds:
+                    warnings.append(
+                        f"PDF processing timed out after {settings.max_processing_seconds} seconds; partial text returned."
                     )
-                    warnings.extend(vision_result.warnings)
+                    break
+
+                page_header = f"[PAGE {page_num}]"
+                try:
+                    direct_text = page.get_text().strip()
+                except Exception as exc:
+                    direct_text = ""
+                    warnings.append(f"Page {page_num}: direct text extraction failed: {exc}")
+
+                if len(direct_text) >= _MIN_CHARS_PER_PAGE:
+                    all_texts.append(f"{page_header}\n{direct_text}")
+                    page_confidences.append(1.0)
+                    methods_used.add(ExtractionMethod.DIRECT_TEXT.value)
+                    page_metadata.append(
+                        {"page": page_num, "method": "direct_text", "chars": len(direct_text)}
+                    )
                     continue
 
-            if ocr_result.raw_text.strip():
-                all_texts.append(f"{page_header}\n[LOW CONFIDENCE] {ocr_result.raw_text}")
-                page_confidences.append(ocr_result.confidence)
-                warnings.append(
-                    f"Page {page_num}: low-confidence OCR ({ocr_result.confidence:.2f}) - text marked uncertain."
+                img_path = Path(file_path).parent / f"_cas_page_{page_num}.png"
+                try:
+                    pix = page.get_pixmap(dpi=200)
+                    pix.save(str(img_path))
+                    ocr_result = self._ocr.extract_text(str(img_path))
+                except Exception as exc:
+                    warnings.append(f"Page {page_num}: rendering/OCR failed: {exc}")
+                    ocr_result = ExtractionResult(
+                        raw_text="",
+                        confidence=0.0,
+                        method=ExtractionMethod.OCR,
+                        warnings=[str(exc)],
+                    )
+                finally:
+                    img_path.unlink(missing_ok=True)
+
+                if ocr_result.confidence >= _LOW_CONFIDENCE_THRESHOLD and ocr_result.raw_text.strip():
+                    all_texts.append(f"{page_header}\n{ocr_result.raw_text}")
+                    page_confidences.append(ocr_result.confidence)
+                    methods_used.add(ExtractionMethod.OCR.value)
+                    page_metadata.append(
+                        {"page": page_num, "method": "ocr", "confidence": ocr_result.confidence}
+                    )
+                    warnings.extend(ocr_result.warnings)
+                    continue
+
+                if self._vision is not None:
+                    img_path2 = Path(file_path).parent / f"_cas_page_vis_{page_num}.png"
+                    try:
+                        pix2 = page.get_pixmap(dpi=200)
+                        pix2.save(str(img_path2))
+                        vision_result = self._vision.extract_text(str(img_path2), prompt="")
+                    except Exception as exc:
+                        warnings.append(f"Page {page_num}: vision fallback failed: {exc}")
+                        vision_result = ExtractionResult(
+                            raw_text="",
+                            confidence=0.0,
+                            method=ExtractionMethod.VISION,
+                            warnings=[str(exc)],
+                        )
+                    finally:
+                        img_path2.unlink(missing_ok=True)
+
+                    if vision_result.raw_text.strip():
+                        all_texts.append(f"{page_header}\n{vision_result.raw_text}")
+                        page_confidences.append(vision_result.confidence)
+                        methods_used.add(ExtractionMethod.VISION.value)
+                        page_metadata.append(
+                            {
+                                "page": page_num,
+                                "method": "vision",
+                                "confidence": vision_result.confidence,
+                            }
+                        )
+                        warnings.extend(vision_result.warnings)
+                        continue
+
+                if ocr_result.raw_text.strip():
+                    all_texts.append(f"{page_header}\n[LOW CONFIDENCE] {ocr_result.raw_text}")
+                    page_confidences.append(ocr_result.confidence)
+                    warnings.append(
+                        f"Page {page_num}: low-confidence OCR ({ocr_result.confidence:.2f}) - text marked uncertain."
+                    )
+                else:
+                    warnings.append(f"Page {page_num}: no text extracted.")
+
+                methods_used.add(ExtractionMethod.OCR.value)
+                page_metadata.append(
+                    {"page": page_num, "method": "ocr_low_conf", "confidence": ocr_result.confidence}
                 )
-            else:
-                warnings.append(f"Page {page_num}: no text extracted.")
-
-            methods_used.add(ExtractionMethod.OCR.value)
-            page_metadata.append(
-                {"page": page_num, "method": "ocr_low_conf", "confidence": ocr_result.confidence}
-            )
-
-        doc.close()
+        finally:
+            doc.close()
 
         raw_text = "\n\n".join(all_texts).strip()
         avg_confidence = (sum(page_confidences) / len(page_confidences)) if page_confidences else 0.0

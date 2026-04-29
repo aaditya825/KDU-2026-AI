@@ -24,6 +24,7 @@ from app.models.domain import (
     TextChunk,
     ModelMetric,
 )
+from app.utils.exceptions import DatabaseError, classify_sqlite_error
 from app.utils.logging_utils import get_logger
 
 log = get_logger(__name__)
@@ -36,7 +37,7 @@ class ProcessingRepository:
         self._db_path = resolve_sqlite_db_path(db_path or settings.sqlite_db_path)
 
     def _connect(self) -> sqlite3.Connection:
-        conn = sqlite3.connect(str(self._db_path))
+        conn = sqlite3.connect(str(self._db_path), timeout=10.0)
         conn.row_factory = sqlite3.Row
         conn.execute("PRAGMA journal_mode=DELETE;")
         conn.execute("PRAGMA foreign_keys=ON;")
@@ -50,50 +51,61 @@ class ProcessingRepository:
         now = datetime.datetime.utcnow().isoformat()
 
         extraction = result.extraction
-        with self._connect() as conn:
-            conn.execute(
-                """
-                INSERT INTO processed_outputs
-                    (output_id, file_id, raw_text, cleaned_text, summary,
-                     key_points, topic_tags, extraction_method, confidence,
-                     model_config_id, created_at, page_metadata, latency_ms,
-                     extraction_latency_ms, warnings, error_message)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    output_id,
-                    result.file_id,
-                    extraction.raw_text if extraction else "",
-                    result.cleaned_text,
-                    result.summary,
-                    json.dumps(result.key_points),
-                    json.dumps(result.topic_tags),
-                    extraction.method.value if extraction else ExtractionMethod.UNKNOWN.value,
-                    extraction.confidence if extraction else 0.0,
-                    None,
-                    now,
-                    json.dumps(extraction.page_metadata if extraction else []),
-                    result.latency_ms,
-                    extraction.latency_ms if extraction else 0,
-                    json.dumps(extraction.warnings if extraction else []),
-                    result.error_message,
-                ),
-            )
+        try:
+            with self._connect() as conn:
+                conn.execute(
+                    """
+                    INSERT INTO processed_outputs
+                        (output_id, file_id, raw_text, cleaned_text, summary,
+                         key_points, topic_tags, extraction_method, confidence,
+                         model_config_id, created_at, page_metadata, latency_ms,
+                         extraction_latency_ms, warnings, error_message)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        output_id,
+                        result.file_id,
+                        extraction.raw_text if extraction else "",
+                        result.cleaned_text,
+                        result.summary,
+                        json.dumps(result.key_points),
+                        json.dumps(result.topic_tags),
+                        extraction.method.value if extraction else ExtractionMethod.UNKNOWN.value,
+                        extraction.confidence if extraction else 0.0,
+                        None,
+                        now,
+                        json.dumps(extraction.page_metadata if extraction else []),
+                        result.latency_ms,
+                        extraction.latency_ms if extraction else 0,
+                        json.dumps(extraction.warnings if extraction else []),
+                        result.error_message,
+                    ),
+                )
+        except sqlite3.IntegrityError as exc:
+            raise DatabaseError(
+                f"Could not save processing result for file '{result.file_id}'.",
+                remediation="The file record may be missing or the local DB may be inconsistent.",
+            ) from exc
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         log.info("ProcessingResult saved", extra={"file_id": result.file_id, "output_id": output_id})
         return output_id
 
     def get_processing_result(self, file_id: str) -> Optional[dict]:
         """Retrieve the most recent processing output for a file."""
-        with self._connect() as conn:
-            row = conn.execute(
-                """
-                SELECT * FROM processed_outputs
-                WHERE file_id = ?
-                ORDER BY created_at DESC
-                LIMIT 1
-                """,
-                (file_id,),
-            ).fetchone()
+        try:
+            with self._connect() as conn:
+                row = conn.execute(
+                    """
+                    SELECT * FROM processed_outputs
+                    WHERE file_id = ?
+                    ORDER BY created_at DESC
+                    LIMIT 1
+                    """,
+                    (file_id,),
+                ).fetchone()
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         if row is None:
             return None
         d = dict(row)
@@ -105,36 +117,42 @@ class ProcessingRepository:
 
     def list_processed_file_ids(self) -> list[str]:
         """Return file_ids that have at least one processed output, newest first."""
-        with self._connect() as conn:
-            rows = conn.execute(
-                """
-                SELECT file_id, MAX(created_at) AS last_created
-                FROM processed_outputs
-                GROUP BY file_id
-                ORDER BY last_created DESC
-                """
-            ).fetchall()
+        try:
+            with self._connect() as conn:
+                rows = conn.execute(
+                    """
+                    SELECT file_id, MAX(created_at) AS last_created
+                    FROM processed_outputs
+                    GROUP BY file_id
+                    ORDER BY last_created DESC
+                    """
+                ).fetchall()
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         return [str(r["file_id"]) for r in rows]
 
     def list_queryable_file_ids(self) -> list[str]:
         """
         Return file_ids that have non-empty cleaned text in their latest processed output.
         """
-        with self._connect() as conn:
-            rows = conn.execute(
-                """
-                SELECT p.file_id
-                FROM processed_outputs p
-                JOIN (
-                    SELECT file_id, MAX(created_at) AS latest_created
-                    FROM processed_outputs
-                    GROUP BY file_id
-                ) latest
-                ON latest.file_id = p.file_id AND latest.latest_created = p.created_at
-                WHERE p.cleaned_text IS NOT NULL AND TRIM(p.cleaned_text) <> ''
-                ORDER BY p.created_at DESC
-                """
-            ).fetchall()
+        try:
+            with self._connect() as conn:
+                rows = conn.execute(
+                    """
+                    SELECT p.file_id
+                    FROM processed_outputs p
+                    JOIN (
+                        SELECT file_id, MAX(created_at) AS latest_created
+                        FROM processed_outputs
+                        GROUP BY file_id
+                    ) latest
+                    ON latest.file_id = p.file_id AND latest.latest_created = p.created_at
+                    WHERE p.cleaned_text IS NOT NULL AND TRIM(p.cleaned_text) <> ''
+                    ORDER BY p.created_at DESC
+                    """
+                ).fetchall()
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         return [str(r["file_id"]) for r in rows]
 
     # ── Chunks ─────────────────────────────────────────────────────────────
@@ -144,35 +162,41 @@ class ProcessingRepository:
         if not chunks:
             return
         file_id = chunks[0].file_id
-        with self._connect() as conn:
-            conn.execute("DELETE FROM chunks WHERE file_id = ?", (file_id,))
-            conn.executemany(
-                """
-                INSERT INTO chunks (chunk_id, file_id, chunk_index, text, confidence, metadata, vector_ref)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                """,
-                [
-                    (
-                        c.chunk_id,
-                        c.file_id,
-                        c.chunk_index,
-                        c.text,
-                        c.confidence,
-                        json.dumps(c.metadata),
-                        c.vector_ref,
-                    )
-                    for c in chunks
-                ],
-            )
+        try:
+            with self._connect() as conn:
+                conn.execute("DELETE FROM chunks WHERE file_id = ?", (file_id,))
+                conn.executemany(
+                    """
+                    INSERT INTO chunks (chunk_id, file_id, chunk_index, text, confidence, metadata, vector_ref)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    [
+                        (
+                            c.chunk_id,
+                            c.file_id,
+                            c.chunk_index,
+                            c.text,
+                            c.confidence,
+                            json.dumps(c.metadata),
+                            c.vector_ref,
+                        )
+                        for c in chunks
+                    ],
+                )
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         log.info("Chunks saved", extra={"file_id": file_id, "count": len(chunks)})
 
     def get_chunks(self, file_id: str) -> list[TextChunk]:
         """Retrieve all chunks for a file, ordered by chunk_index."""
-        with self._connect() as conn:
-            rows = conn.execute(
-                "SELECT * FROM chunks WHERE file_id = ? ORDER BY chunk_index ASC",
-                (file_id,),
-            ).fetchall()
+        try:
+            with self._connect() as conn:
+                rows = conn.execute(
+                    "SELECT * FROM chunks WHERE file_id = ? ORDER BY chunk_index ASC",
+                    (file_id,),
+                ).fetchall()
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         return [
             TextChunk(
                 chunk_id=r["chunk_id"],
@@ -191,33 +215,39 @@ class ProcessingRepository:
     def save_metric(self, metric: ModelMetric) -> None:
         if not metric.metric_id:
             metric.metric_id = str(uuid.uuid4())
-        with self._connect() as conn:
-            conn.execute(
-                """
-                INSERT INTO model_metrics
-                    (metric_id, file_id, stage, model_name, provider,
-                     latency_ms, estimated_cost, status, error_message)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                """,
-                (
-                    metric.metric_id,
-                    metric.file_id,
-                    metric.stage,
-                    metric.model_name,
-                    metric.provider,
-                    metric.latency_ms,
-                    metric.estimated_cost,
-                    metric.status,
-                    metric.error_message,
-                ),
-            )
+        try:
+            with self._connect() as conn:
+                conn.execute(
+                    """
+                    INSERT INTO model_metrics
+                        (metric_id, file_id, stage, model_name, provider,
+                         latency_ms, estimated_cost, status, error_message)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """,
+                    (
+                        metric.metric_id,
+                        metric.file_id,
+                        metric.stage,
+                        metric.model_name,
+                        metric.provider,
+                        metric.latency_ms,
+                        metric.estimated_cost,
+                        metric.status,
+                        metric.error_message,
+                    ),
+                )
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
 
     def get_metrics(self, file_id: str) -> list[ModelMetric]:
-        with self._connect() as conn:
-            rows = conn.execute(
-                "SELECT * FROM model_metrics WHERE file_id = ? ORDER BY rowid ASC",
-                (file_id,),
-            ).fetchall()
+        try:
+            with self._connect() as conn:
+                rows = conn.execute(
+                    "SELECT * FROM model_metrics WHERE file_id = ? ORDER BY rowid ASC",
+                    (file_id,),
+                ).fetchall()
+        except sqlite3.Error as exc:
+            raise classify_sqlite_error(exc) from exc
         return [
             ModelMetric(
                 metric_id=r["metric_id"],

@@ -44,6 +44,17 @@ class AudioProcessingPipeline:
     def process(self, file_path: str) -> ExtractionResult:
         t0 = time.monotonic()
         result = self._adapter.transcribe(file_path)
+        if (
+            not result.raw_text.strip()
+            and result.method == ExtractionMethod.FASTER_WHISPER
+            and any("failed" in warning.lower() or "decode" in warning.lower() for warning in result.warnings)
+        ):
+            log.warning("faster-whisper returned no text after a failure; trying whisper fallback.")
+            fallback_size = AUDIO_PROVIDER_MODELS.get("whisper", DEFAULT_AUDIO_MODEL_SIZE)
+            fallback_result = WhisperAdapter(model_size=fallback_size).transcribe(file_path)
+            if fallback_result.raw_text.strip():
+                fallback_result.warnings = result.warnings + fallback_result.warnings
+                result = fallback_result
         total_latency = int((time.monotonic() - t0) * 1000)
 
         log.info(

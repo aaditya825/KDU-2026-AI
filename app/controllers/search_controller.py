@@ -28,6 +28,30 @@ from app.utils.logging_utils import get_logger
 
 log = get_logger(__name__)
 
+_STOPWORDS = {
+    "a",
+    "an",
+    "and",
+    "are",
+    "as",
+    "at",
+    "be",
+    "by",
+    "for",
+    "from",
+    "in",
+    "is",
+    "it",
+    "of",
+    "on",
+    "or",
+    "the",
+    "to",
+    "what",
+    "which",
+    "with",
+}
+
 
 def _build_llm():
     from app.adapters.llm_adapter import build_llm_adapter
@@ -239,6 +263,15 @@ class SearchController:
         if top_k < 1 or top_k > settings.max_retrieval_top_k:
             raise ValueError(
                 f"top_k must be between 1 and {settings.max_retrieval_top_k}."
+            )
+        tokens = {
+            tok for tok in re.findall(r"[a-z0-9]+", query.lower())
+            if len(tok) > 1
+        }
+        meaningful = tokens.difference(_STOPWORDS)
+        if not meaningful:
+            raise ValueError(
+                "Query must include at least one meaningful alphanumeric term, not only symbols or stopwords."
             )
 
     def search(self, file_id: str | None, query: str, top_k: int = 5) -> list[SearchResult]:

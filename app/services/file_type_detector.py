@@ -11,6 +11,9 @@ import mimetypes
 from pathlib import Path
 
 from app.models.domain import FileType
+from app.utils.logging_utils import get_logger
+
+log = get_logger(__name__)
 
 SUPPORTED_MIME_TYPES: frozenset[str] = frozenset(
     {
@@ -53,8 +56,10 @@ def detect_mime_type(path: Path, original_name: str | None = None) -> tuple[str,
         detected = magic.from_file(str(path), mime=True) or ""
         if detected:
             return detected, True
-    except Exception:
-        pass
+    except ImportError:
+        log.warning("python-magic/libmagic is unavailable; falling back to filename MIME detection.")
+    except Exception as exc:
+        log.warning("Content MIME detection failed for %s; falling back to filename detection: %s", path, exc)
 
     name = original_name or path.name
     mime, _ = mimetypes.guess_type(name)

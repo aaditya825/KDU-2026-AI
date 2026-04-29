@@ -18,7 +18,9 @@ from pathlib import Path
 
 from app.adapters.base import VisionModelAdapter
 from app.config.model_registry import VISION_PROVIDER_MODELS
+from app.config.settings import settings
 from app.models.domain import ExtractionMethod, ExtractionResult
+from app.utils.exceptions import classify_external_error
 from app.utils.logging_utils import get_logger
 
 log = get_logger(__name__)
@@ -45,12 +47,23 @@ class OcrAdapter(VisionModelAdapter):
 
         warnings: list[str] = []
         try:
-            img = Image.open(image_path)
-            raw_text: str = pytesseract.image_to_string(img)
-            # Get per-word confidence data to estimate overall confidence
-            data = pytesseract.image_to_data(
-                img, output_type=pytesseract.Output.DICT
-            )
+            with Image.open(image_path) as img:
+                img.load()
+                if img.mode not in {"RGB", "RGBA", "L", "1", "P", "CMYK"}:
+                    warnings.append(
+                        f"Image color mode '{img.mode}' may not be supported by OCR; converting to RGB."
+                    )
+                ocr_img = img.convert("RGB")
+                raw_text: str = pytesseract.image_to_string(
+                    ocr_img,
+                    timeout=max(1, settings.max_ocr_seconds),
+                )
+                # Get per-word confidence data to estimate overall confidence.
+                data = pytesseract.image_to_data(
+                    ocr_img,
+                    output_type=pytesseract.Output.DICT,
+                    timeout=max(1, settings.max_ocr_seconds),
+                )
             confs = [c for c in data["conf"] if isinstance(c, (int, float)) and c >= 0]
             avg_conf = (sum(confs) / len(confs) / 100.0) if confs else 0.5
 
@@ -58,13 +71,37 @@ class OcrAdapter(VisionModelAdapter):
                 warnings.append("No text detected by OCR.")
                 avg_conf = 0.1
 
+        except pytesseract.TesseractNotFoundError as exc:
+            log.warning("Tesseract executable not found: %s", exc)
+            return ExtractionResult(
+                raw_text="",
+                confidence=0.0,
+                method=ExtractionMethod.OCR,
+                warnings=[
+                    "Tesseract executable was not found. Install Tesseract OCR and ensure it is on PATH."
+                ],
+                latency_ms=int((time.monotonic() - t0) * 1000),
+            )
+        except RuntimeError as exc:
+            if "timeout" in str(exc).lower():
+                warning = f"OCR timed out after {settings.max_ocr_seconds} seconds."
+            else:
+                warning = str(exc)
+            log.warning("OCR runtime failure: %s", exc)
+            return ExtractionResult(
+                raw_text="",
+                confidence=0.0,
+                method=ExtractionMethod.OCR,
+                warnings=[warning],
+                latency_ms=int((time.monotonic() - t0) * 1000),
+            )
         except Exception as exc:
             log.warning("OCR extraction failed: %s", exc)
             return ExtractionResult(
                 raw_text="",
                 confidence=0.0,
                 method=ExtractionMethod.OCR,
-                warnings=[str(exc)],
+                warnings=[f"OCR extraction failed. The image may be corrupt or unsupported: {exc}"],
                 latency_ms=int((time.monotonic() - t0) * 1000),
             )
 
@@ -123,14 +160,17 @@ class GeminiVisionAdapter(VisionModelAdapter):
                 contents=[img, effective_prompt],
             )
             raw_text = response.text or ""
+            if not raw_text.strip():
+                raise RuntimeError("Gemini vision returned an empty response.")
             confidence = 0.85 if raw_text.strip() else 0.1
         except Exception as exc:
             log.warning("Gemini vision extraction failed: %s", exc)
+            error = classify_external_error(exc, provider="Gemini vision")
             return ExtractionResult(
                 raw_text="",
                 confidence=0.0,
                 method=ExtractionMethod.VISION,
-                warnings=[str(exc)],
+                warnings=[str(error)],
                 latency_ms=int((time.monotonic() - t0) * 1000),
             )
 

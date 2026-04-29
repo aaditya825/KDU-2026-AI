@@ -13,6 +13,7 @@ Images are not resized before OCR — original resolution gives best results.
 from __future__ import annotations
 
 import time
+from statistics import mean
 
 from app.adapters.base import VisionModelAdapter
 from app.adapters.ocr_adapter import OcrAdapter
@@ -29,6 +30,28 @@ _VISION_PROMPT = (
 )
 
 
+def _image_quality_warnings(file_path: str) -> list[str]:
+    warnings: list[str] = []
+    try:
+        from PIL import Image, ImageStat
+
+        with Image.open(file_path) as img:
+            img.load()
+            gray = img.convert("L")
+            stat = ImageStat.Stat(gray)
+            avg = stat.mean[0] if stat.mean else 0.0
+            variance = mean(stat.var) if stat.var else 0.0
+            if avg < 5 or avg > 250 or variance < 2:
+                warnings.append(
+                    "Image appears blank or extremely low contrast; OCR quality may be poor."
+                )
+            if min(img.size) < 50:
+                warnings.append("Image is very small; OCR may not detect text reliably.")
+    except Exception as exc:
+        warnings.append(f"Image quality inspection failed: {exc}")
+    return warnings
+
+
 class ImageProcessingPipeline:
     """Extract text from JPG/PNG images using OCR with optional vision fallback."""
 
@@ -38,8 +61,10 @@ class ImageProcessingPipeline:
 
     def process(self, file_path: str) -> ExtractionResult:
         t0 = time.monotonic()
+        quality_warnings = _image_quality_warnings(file_path)
 
         ocr_result = self._ocr.extract_text(file_path)
+        ocr_result.warnings = quality_warnings + ocr_result.warnings
 
         if ocr_result.confidence >= _LOW_CONFIDENCE_THRESHOLD and ocr_result.raw_text.strip():
             log.info(
@@ -74,7 +99,9 @@ class ImageProcessingPipeline:
                 f"Low-confidence OCR ({ocr_result.confidence:.2f}) — text may be inaccurate."
             )
         elif not raw.strip():
-            warnings.append("No text could be extracted from this image.")
+            warnings.append(
+                "No text could be extracted from this image. It may be blank, blurry, skewed, low contrast, or unsupported."
+            )
 
         return ExtractionResult(
             raw_text=raw,
