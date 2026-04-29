@@ -1,0 +1,11 @@
+Answer the following question using ONLY the provided context chunks.
+If the context does not contain enough information to answer, respond with:
+"Insufficient evidence in the provided context."
+
+Do not use any outside knowledge. Cite the chunk index where possible.
+
+Question:
+{question}
+
+Context:
+{context}

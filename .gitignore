@@ -194,6 +194,21 @@ cython_debug/
 # PyPI configuration file
 .pypirc
 
+# Content Accessibility Suite runtime artifacts
+pytest-cache-files-*/
+.claude/worktrees/
+tests/.tmp/
+data/processed/*
+!data/processed/.gitkeep
+data/sqlite/*
+!data/sqlite/.gitkeep
+data/uploads/*
+!data/uploads/.gitkeep
+data/vector_db/*
+!data/vector_db/.gitkeep
+reports/*
+!reports/.gitkeep
+
 # Cursor
 #  Cursor is an AI-powered code editor. `.cursorignore` specifies files/directories to
 #  exclude from AI features like autocomplete and code analysis. Recommended for sensitive data

@@ -1,0 +1,5 @@
+Summarize the following content in about 150 words.
+Keep the meaning accurate and avoid adding unsupported facts.
+
+Content:
+{content}

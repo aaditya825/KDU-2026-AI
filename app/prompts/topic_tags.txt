@@ -1,0 +1,5 @@
+Generate 5-10 short topic tags for the following content.
+Return only a comma-separated list of lowercase tags. No explanations.
+
+Content:
+{content}

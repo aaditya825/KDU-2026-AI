@@ -1,0 +1,5 @@
+Extract 5-7 key points from the following content.
+Return only a numbered list. Each item should be one concise sentence.
+
+Content:
+{content}
