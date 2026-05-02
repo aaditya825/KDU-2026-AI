@@ -1,0 +1,28 @@
+import os
+import platform
+from pathlib import Path
+
+print("=== PHASE 2: HITL + AUDIT + DOCKER SANDBOX ===")
+print("Docker flag /.dockerenv exists:", Path("/.dockerenv").exists())
+print("Platform:", platform.platform())
+print("Current working directory:", os.getcwd())
+
+print("\nFiles in current working directory:")
+for item in sorted(Path(".").iterdir()):
+    print(" -", item.name)
+
+print("\nChecking host Desktop paths from inside container:")
+for path in ["C:/Users/Dell/Desktop", "/mnt/c/Users/Dell/Desktop", "/Users/Dell/Desktop"]:
+    print(f"{path} exists inside container:", Path(path).exists())
+
+target = Path("test.txt")
+target.write_text("container-only test file", encoding="utf-8")
+
+print("\nCreated:", target.resolve())
+print("test.txt exists before deletion:", target.exists())
+
+target.unlink()
+
+print("Deleted container-local test.txt.")
+print("test.txt exists after deletion:", target.exists())
+print("\nConclusion: Approved code ran only inside Docker.")

@@ -1,0 +1,20 @@
+from pathlib import Path
+import os
+import platform
+
+print("=== PHASE 3 SUCCESSFUL ATTEMPT ===")
+print("Docker flag /.dockerenv exists:", Path("/.dockerenv").exists())
+print("Platform:", platform.platform())
+print("Current working directory:", os.getcwd())
+
+target = Path("test.txt")
+target.write_text("hello from successful attempt", encoding="utf-8")
+
+print("Created:", target.resolve())
+print("test.txt exists before deletion:", target.exists())
+
+target.unlink()
+
+print("Deleted local test.txt.")
+print("test.txt exists after deletion:", target.exists())
+print("Success: only container-local test.txt was created and deleted.")

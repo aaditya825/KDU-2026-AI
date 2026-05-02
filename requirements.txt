@@ -1,0 +1,5 @@
+autogen-agentchat
+autogen-core
+autogen-ext[openai,docker,web-surfer]
+python-dotenv
+playwright
