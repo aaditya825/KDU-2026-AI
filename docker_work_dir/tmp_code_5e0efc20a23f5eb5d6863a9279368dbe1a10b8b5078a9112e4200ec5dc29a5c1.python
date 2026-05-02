@@ -1,0 +1,52 @@
+import os
+import platform
+
+def prove_isolation():
+    """Prints diagnostic information to verify the environment is a container."""
+    print("--- Environment Security Check ---")
+    
+    # Check for the common Docker indicator
+    is_docker = os.path.exists('/.dockerenv')
+    print(f"Docker Flag (/.dockerenv) detected: {is_docker}")
+    
+    # Check cgroups for container identifiers
+    try:
+        with open('/proc/1/cgroup', 'rt') as f:
+            cgroup_info = f.read()
+            in_container = 'docker' in cgroup_info or 'kubepods' in cgroup_info or 'containerd' in cgroup_info
+            print(f"Container string found in cgroup: {in_container}")
+    except Exception:
+        print("Could not access /proc/1/cgroup (typical of some restricted sandboxes)")
+
+    print(f"System Node/Hostname: {platform.node()}")
+    print(f"Operating System: {platform.system()} {platform.release()}")
+    print(f"Current User ID: {os.getuid() if hasattr(os, 'getuid') else 'N/A'}")
+    print("----------------------------------\n")
+
+def manage_files():
+    """Performs the requested file operations within the local container scope."""
+    cwd = os.getcwd()
+    target_file = "test.txt"
+
+    print(f"Current Working Directory: {cwd}")
+    print(f"Initial file list: {os.listdir(cwd)}")
+
+    # Create the local test file
+    print(f"Creating local file: {target_file}")
+    with open(target_file, "w") as f:
+        f.write("Sandboxed test file.")
+
+    print(f"File list after creation: {os.listdir(cwd)}")
+
+    # Delete the local test file
+    if os.path.exists(target_file):
+        print(f"Deleting file: {target_file}")
+        os.remove(target_file)
+    else:
+        print(f"File {target_file} not found.")
+
+    print(f"Final file list: {os.listdir(cwd)}")
+
+if __name__ == "__main__":
+    prove_isolation()
+    manage_files()

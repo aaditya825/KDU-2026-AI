@@ -1,0 +1,7 @@
+from pathlib import Path
+
+target = Path("test.txt")
+target.write_text("hello from attempt 3", encoding="utf-8")
+print("Created:", target.exists())
+file.unlink()
+print("Deleted:", not target.exists())

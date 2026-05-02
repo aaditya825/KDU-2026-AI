@@ -1,0 +1,356 @@
+PHASE 3 - MAP & OPTIMIZE: COST OF ITERATION
+========================================================================
+Timestamp: 2026-05-02 17:31:20.333364
+Host OS: Windows-11-10.0.26200-SP0
+Project directory: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI
+Docker work directory: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI\phase3_docker_work_dir
+
+Scenario:
+The agent generates incorrect code, execution fails, feedback is sent back,
+and the agent self-corrects. This repeats 3 times before success.
+
+Cost model:
+Input cost per 1M tokens: $0.3
+Output cost per 1M tokens: $2.5
+Token estimate rule: 1 token ~= 4 characters
+
+ATTEMPT 1
+------------------------------------------------------------------------
+Success: False
+Estimated input tokens: 142
+Estimated output tokens: 360
+Estimated total tokens: 502
+Estimated cost: $0.00094260
+
+Coder Agent response:
+```python
+import os
+
+filename = "test.txt"
+
+# Attempt to delete the file before it's created.
+# This will intentionally cause a FileNotFoundError if the file doesn't exist,
+# simulating a common mistake where operations are performed without checking for prerequisites.
+print(f"Attempting to delete '{filename}' before creation...")
+os.remove(filename) # This line is intentionally flawed to cause an error
+
+# The script would ideally continue from here after fixing the above error.
+print(f"Checking if '{filename}' exists before creation: {os.path.exists(filename)}")
+
+# Create the file
+try:
+    with open(filename, "w") as f:
+        f.write("Hello from Docker!")
+    print(f"'{filename}' created.")
+except Exception as e:
+    print(f"Error creating file: {e}")
+
+# Check if the file exists after creation
+print(f"Checking if '{filename}' exists after creation: {os.path.exists(filename)}")
+
+# Delete the file
+try:
+    os.remove(filename)
+    print(f"'{filename}' deleted.")
+except Exception as e:
+    print(f"Error deleting file: {e}")
+
+# Check if the file exists after deletion
+print(f"Checking if '{filename}' exists after deletion: {os.path.exists(filename)}")
+```
+
+Code executed inside Docker:
+```python
+print("Attempt 1: creating file"
+```
+
+Docker execution output:
+The script ran, then exited with an error (POSIX exit code: 1)
+Its output was:
+  File "/workspace/tmp_code_c59d0c0c51d650e39e980a1fca392a9af25df7c28e4910f575b66d514b1fc98c.python", line 1
+    print("Attempt 1: creating file"
+         ^
+SyntaxError: '(' was never closed
+
+------------------------------------------------------------------------
+
+ATTEMPT 2
+------------------------------------------------------------------------
+Success: False
+Estimated input tokens: 265
+Estimated output tokens: 486
+Estimated total tokens: 751
+Estimated cost: $0.00129450
+
+Coder Agent response:
+```python
+import os
+
+filename = "test.txt"
+
+# Fix: The previous attempt had an intentional flaw where it tried to delete
+# the file without checking if it exists, which would lead to a FileNotFoundError
+# if the file wasn't present. The reported SyntaxError was likely due to
+# an external factor or a misunderstanding of the original code state.
+# This correction makes the initial deletion attempt safe and robust.
+
+# Safely attempt to delete the file before creation to ensure a clean slate
+print(f"Attempting to clean up '{filename}' if it exists from a previous run...")
+if os.path.exists(filename):
+    try:
+        os.remove(filename)
+        print(f"'{filename}' cleaned up successfully.")
+    except OSError as e: # Catch specific OSError for file operations
+        print(f"Error during cleanup of '{filename}': {e}")
+else:
+    print(f"'{filename}' did not exist, no cleanup needed.")
+
+# Check if the file exists before creation
+print(f"Checking if '{filename}' exists before creation: {os.path.exists(filename)}")
+
+# Create the file
+try:
+    with open(filename, "w") as f:
+        f.write("Hello from Docker!")
+    print(f"'{filename}' created.")
+except OSError as e:
+    print(f"Error creating file: {e}")
+
+# Check if the file exists after creation
+print(f"Checking if '{filename}' exists after creation: {os.path.exists(filename)}")
+
+# Delete the file
+try:
+    os.remove(filename)
+    print(f"'{filename}' deleted.")
+except OSError as e:
+    print(f"Error deleting file: {e}")
+
+# Check if the file exists after deletion
+print(f"Checking if '{filename}' exists after deletion: {os.path.exists(filename)}")
+```
+
+Code executed inside Docker:
+```python
+target = Path("test.txt")
+target.write_text("hello from attempt 2", encoding="utf-8")
+print("Created:", target.exists())
+target.unlink()
+print("Deleted:", not target.exists())
+```
+
+Docker execution output:
+The script ran, then exited with an error (POSIX exit code: 1)
+Its output was:
+Traceback (most recent call last):
+  File "/workspace/tmp_code_22b5c71728debad2a3840b6bb18060cc99a09debdc6e48f3a8a95183ccdea751.python", line 1, in <module>
+    target = Path("test.txt")
+             ^^^^
+NameError: name 'Path' is not defined
+
+------------------------------------------------------------------------
+
+ATTEMPT 3
+------------------------------------------------------------------------
+Success: False
+Estimated input tokens: 284
+Estimated output tokens: 432
+Estimated total tokens: 716
+Estimated cost: $0.00116520
+
+Coder Agent response:
+```python
+import os
+from pathlib import Path # Import Path from pathlib
+
+file_path = Path("test.txt") # Use pathlib.Path for cleaner path operations
+
+# Safely attempt to delete the file before creation to ensure a clean slate
+print(f"Attempting to clean up '{file_path}' if it exists from a previous run...")
+if file_path.exists(): # Use Path.exists()
+    try:
+        file_path.unlink() # Use Path.unlink() to delete
+        print(f"'{file_path}' cleaned up successfully.")
+    except OSError as e:
+        print(f"Error during cleanup of '{file_path}': {e}")
+else:
+    print(f"'{file_path}' did not exist, no cleanup needed.")
+
+# Check if the file exists before creation
+print(f"Checking if '{file_path}' exists before creation: {file_path.exists()}")
+
+# Create the file
+try:
+    with file_path.open("w") as f: # Use Path.open()
+        f.write("Hello from Docker!")
+    print(f"'{file_path}' created.")
+except OSError as e:
+    print(f"Error creating file: {e}")
+
+# Check if the file exists after creation
+print(f"Checking if '{file_path}' exists after creation: {file_path.exists()}")
+
+# Delete the file
+try:
+    file_path.unlink() # Use Path.unlink() to delete
+    print(f"'{file_path}' deleted.")
+except OSError as e:
+    print(f"Error deleting file: {e}")
+
+# Check if the file exists after deletion
+print(f"Checking if '{file_path}' exists after deletion: {file_path.exists()}")
+```
+
+Code executed inside Docker:
+```python
+from pathlib import Path
+
+target = Path("test.txt")
+target.write_text("hello from attempt 3", encoding="utf-8")
+print("Created:", target.exists())
+file.unlink()
+print("Deleted:", not target.exists())
+```
+
+Docker execution output:
+The script ran, then exited with an error (POSIX exit code: 1)
+Its output was:
+Created: True
+Traceback (most recent call last):
+  File "/workspace/tmp_code_e04405cf4ba2bc24fd2662781ea0b2c775d9f47566cad39bbea7eaae7e8dcbb1.python", line 6, in <module>
+    file.unlink()
+    ^^^^
+NameError: name 'file' is not defined. Did you mean: 'filter'?
+
+------------------------------------------------------------------------
+
+ATTEMPT 4
+------------------------------------------------------------------------
+Success: True
+Estimated input tokens: 396
+Estimated output tokens: 681
+Estimated total tokens: 1077
+Estimated cost: $0.00182130
+
+Coder Agent response:
+The traceback indicates a `NameError: name 'file' is not defined` on a line attempting `file.unlink()`.
+
+Upon reviewing the previous solution (Attempt 3), the variable used for the `Path` object was consistently named `file_path`, not `file`. For example, `file_path = Path("test.txt")` and `file_path.unlink()`.
+
+This suggests that the error might have arisen from a modification or misinterpretation of the code by the execution environment, where `file_path` was inadvertently changed to `file` in the executed script.
+
+The provided solution already correctly defines and uses `file_path`. To address the reported `NameError` for `file`, the fix is to ensure that the correct variable `file_path` is consistently used for all path operations, especially `unlink()`. Since the last submitted code already does this, the most minimal and safe correction is to resubmit the code, which already correctly uses `file_path` where `file` was reportedly undefined.
+
+```python
+import os
+from pathlib import Path # Import Path from pathlib
+
+file_path = Path("test.txt") # Use pathlib.Path for cleaner path operations
+
+# Safely attempt to delete the file before creation to ensure a clean slate
+print(f"Attempting to clean up '{file_path}' if it exists from a previous run...")
+if file_path.exists(): # Use Path.exists()
+    try:
+        file_path.unlink() # Use Path.unlink() to delete
+        print(f"'{file_path}' cleaned up successfully.")
+    except OSError as e:
+        print(f"Error during cleanup of '{file_path}': {e}")
+else:
+    print(f"'{file_path}' did not exist, no cleanup needed.")
+
+# Check if the file exists before creation
+print(f"Checking if '{file_path}' exists before creation: {file_path.exists()}")
+
+# Create the file
+try:
+    with file_path.open("w") as f: # Use Path.open()
+        f.write("Hello from Docker!")
+    print(f"'{file_path}' created.")
+except OSError as e:
+    print(f"Error creating file: {e}")
+
+# Check if the file exists after creation
+print(f"Checking if '{file_path}' exists after creation: {file_path.exists()}")
+
+# Delete the file
+try:
+    file_path.unlink() # Use Path.unlink() to delete
+    print(f"'{file_path}' deleted.")
+except OSError as e:
+    print(f"Error deleting file: {e}")
+
+# Check if the file exists after deletion
+print(f"Checking if '{file_path}' exists after deletion: {file_path.exists()}")
+```
+
+Code executed inside Docker:
+```python
+from pathlib import Path
+import os
+import platform
+
+print("=== PHASE 3 SUCCESSFUL ATTEMPT ===")
+print("Docker flag /.dockerenv exists:", Path("/.dockerenv").exists())
+print("Platform:", platform.platform())
+print("Current working directory:", os.getcwd())
+
+target = Path("test.txt")
+target.write_text("hello from successful attempt", encoding="utf-8")
+
+print("Created:", target.resolve())
+print("test.txt exists before deletion:", target.exists())
+
+target.unlink()
+
+print("Deleted local test.txt.")
+print("test.txt exists after deletion:", target.exists())
+print("Success: only container-local test.txt was created and deleted.")
+```
+
+Docker execution output:
+=== PHASE 3 SUCCESSFUL ATTEMPT ===
+Docker flag /.dockerenv exists: True
+Platform: Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.41
+Current working directory: /workspace
+Created: /workspace/test.txt
+test.txt exists before deletion: True
+Deleted local test.txt.
+test.txt exists after deletion: False
+Success: only container-local test.txt was created and deleted.
+
+------------------------------------------------------------------------
+
+SUMMARY
+========================================================================
+Total iterations: 4
+Failed attempts: 3
+Successful attempts: 1
+Success iteration: 4
+
+Total estimated input tokens: 1087
+Total estimated output tokens: 1959
+Total estimated tokens: 3046
+Total estimated cost: $0.00522360
+
+Final successful attempt tokens: 1077
+Retry overhead tokens: 1969
+Retry overhead percentage vs final attempt: 182.82%
+
+PHASE 3 QUESTIONS AND ANSWERS
+========================================================================
+Q1. How much token overhead did retries introduce?
+A1. Retries introduced approximately 1969 extra tokens.
+    That is about 182.82% of the final successful attempt's token usage.
+
+Q2. What part of the pipeline is most expensive?
+A2. The repeated LLM correction calls are the most expensive part.
+    Docker execution is local and cheap, but every retry sends another prompt,
+    previous error context, and receives another generated response.
+
+Q3. How can you reduce failed attempts?
+A3. Use clearer prompts, smaller tasks, static validation, linting, unit tests,
+    Web/Audit review before execution, and stricter safety templates.
+
+Q4. How can you reduce token usage?
+A4. Limit retries, send only the latest error instead of full logs, summarize failures,
+    use cheaper models, keep prompts short, and avoid repeating large code blocks unnecessarily.

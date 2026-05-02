@@ -1,0 +1,96 @@
+PHASE 1 - AFTER DOCKER: SANDBOX EXECUTION DEMO
+======================================================================
+
+Host system info:
+Host OS: Windows-11-10.0.26200-SP0
+Project directory: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI
+Docker work directory: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI\docker_work_dir
+
+Execution method: DockerCommandLineCodeExecutor from autogen-ext.
+
+Coder Agent generated this code:
+----------------------------------------------------------------------
+```python
+import os
+import platform
+    
+def prove_isolation():
+    """Prints diagnostic information to verify the environment is a container."""
+    print("--- Environment Security Check ---")
+    
+    # Check for the common Docker indicator
+    is_docker = os.path.exists('/.dockerenv')
+    print(f"Docker Flag (/.dockerenv) detected: {is_docker}")
+    
+    # Check cgroups for container identifiers
+    try:
+        with open('/proc/1/cgroup', 'rt') as f:
+            cgroup_info = f.read()
+            in_container = 'docker' in cgroup_info or 'kubepods' in cgroup_info or 'containerd' in cgroup_info
+            print(f"Container string found in cgroup: {in_container}")
+    except Exception:
+        print("Could not access /proc/1/cgroup (typical of some restricted sandboxes)")
+
+    print(f"System Node/Hostname: {platform.node()}")
+    print(f"Operating System: {platform.system()} {platform.release()}")
+    print(f"Current User ID: {os.getuid() if hasattr(os, 'getuid') else 'N/A'}")
+    print("----------------------------------\n")
+
+def manage_files():
+    """Performs the requested file operations within the local container scope."""
+    cwd = os.getcwd()
+    target_file = "test.txt"
+
+    print(f"Current Working Directory: {cwd}")
+    print(f"Initial file list: {os.listdir(cwd)}")
+
+    # Create the local test file
+    print(f"Creating local file: {target_file}")
+    with open(target_file, "w") as f:
+        f.write("Sandboxed test file.")
+
+    print(f"File list after creation: {os.listdir(cwd)}")
+
+    # Delete the local test file
+    if os.path.exists(target_file):
+        print(f"Deleting file: {target_file}")
+        os.remove(target_file)
+    else:
+        print(f"File {target_file} not found.")
+
+    print(f"Final file list: {os.listdir(cwd)}")
+
+if __name__ == "__main__":
+    prove_isolation()
+    manage_files()
+```
+----------------------------------------------------------------------
+
+Docker sandbox execution output:
+----------------------------------------------------------------------
+--- Environment Security Check ---
+Docker Flag (/.dockerenv) detected: True
+Container string found in cgroup: False
+System Node/Hostname: e63c08e8bf7d
+Operating System: Linux 6.6.87.2-microsoft-standard-WSL2
+Current User ID: 0
+----------------------------------
+
+Current Working Directory: /workspace
+Initial file list: ['tmp_code_5e0efc20a23f5eb5d6863a9279368dbe1a10b8b5078a9112e4200ec5dc29a5c1.python']
+Creating local file: test.txt
+File list after creation: ['test.txt', 'tmp_code_5e0efc20a23f5eb5d6863a9279368dbe1a10b8b5078a9112e4200ec5dc29a5c1.python']
+Deleting file: test.txt
+Final file list: ['tmp_code_5e0efc20a23f5eb5d6863a9279368dbe1a10b8b5078a9112e4200ec5dc29a5c1.python']
+
+----------------------------------------------------------------------
+
+Answers after Docker:
+Q: What changed in execution scope?
+A: The generated code no longer ran directly on the Windows host. It ran inside a temporary Docker container created by DockerCommandLineCodeExecutor.
+
+Q: Could the code see the real Windows Desktop?
+A: It should not be able to see the real Windows Desktop unless a host path is explicitly mounted into the container. This script does not mount the Desktop.
+
+Q: Was deletion limited to the container?
+A: Yes. The test.txt file was created and deleted inside the Docker execution scope only.

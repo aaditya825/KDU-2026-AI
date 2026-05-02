@@ -1,0 +1,271 @@
+PHASE 2 - HITL + WEB SURFER / AUDIT + DOCKER EXECUTION
+======================================================================
+Timestamp: 2026-05-02 17:39:50.940577
+Host OS: Windows-11-10.0.26200-SP0
+Project directory: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI
+Docker work directory: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI\phase2_docker_work_dir
+
+Coder Agent output:
+----------------------------------------------------------------------
+```python
+import os
+import platform
+import sys
+
+def run_docker_sandbox_checks():
+    """
+    Performs a series of checks for a secure Docker sandbox lab environment.
+    This script is designed to run inside a Docker container.
+    """
+    print("--- Docker Sandbox Lab Checks ---")
+
+    # 1. Print whether /.dockerenv exists.
+    # This file is typically present in official Docker containers.
+    dockerenv_path = '/.dockerenv'
+    print(f"1. Does '{dockerenv_path}' exist? {os.path.exists(dockerenv_path)}")
+
+    # 2. Print OS and current working directory.
+    print(f"2. Operating System: {platform.system()} {platform.release()} (Architecture: {platform.machine()})")
+    print(f"   Python Version: {sys.version.splitlines()[0]}")
+    current_working_directory = os.getcwd()
+    print(f"   Current Working Directory: {current_working_directory}")
+
+    # 3. List files in the current working directory.
+    print(f"\n3. Files in current working directory ('{current_working_directory}'):")
+    try:
+        files_in_cwd = os.listdir(current_working_directory)
+        if files_in_cwd:
+            for entry in files_in_cwd:
+                # Add a marker for directories for better visibility
+                full_path = os.path.join(current_working_directory, entry)
+                if os.path.isdir(full_path):
+                    print(f"   - {entry}/")
+                else:
+                    print(f"   - {entry}")
+        else:
+            print("   (No files found)")
+    except OSError as e:
+        print(f"   Error listing files in CWD: {e}")
+
+    # 4. Check whether these host paths are visible.
+    # In a secure sandbox, these paths should typically NOT be visible (return False).
+    # If they return True, it indicates a volume mount or a misconfiguration.
+    host_paths_to_check = [
+        'C:/Users/Dell/Desktop',      # Common Windows path
+        '/mnt/c/Users/Dell/Desktop',  # Common WSL path when Windows drives are mounted
+        '/Users/Dell/Desktop'         # Common macOS/Linux path
+    ]
+    print("\n4. Checking visibility of potential host Desktop paths:")
+    for path in host_paths_to_check:
+        print(f"   - Is '{path}' visible (exists)? {os.path.exists(path)}")
+        # IMPORTANT: This check only verifies existence.
+        # The script does NOT attempt to read, write, or modify these paths.
+
+    # Define the test file path within the current working directory.
+    test_file_name = "test.txt"
+    test_file_path = os.path.join(current_working_directory, test_file_name)
+
+    print(f"\n5. & 7. Managing '{test_file_name}' in '{current_working_directory}':")
+
+    # 7. Print whether test.txt exists before creation.
+    print(f"   '{test_file_name}' exists BEFORE creation: {os.path.exists(test_file_path)}")
+
+    # 5. Create test.txt only in the current working directory.
+    try:
+        with open(test_file_path, 'w') as f:
+            f.write("This is a test file created by the secure Docker sandbox script.\n")
+            f.write("It should only exist and be deleted within the current working directory.\n")
+        print(f"   '{test_file_name}' created successfully.")
+    except Exception as e:
+        print(f"   Error creating '{test_file_name}': {e}")
+        # Exit if creation fails to prevent deletion attempts on non-existent file
+        # or misinterpreting subsequent checks.
+        sys.exit(1)
+
+    # 7. Print whether test.txt exists after creation.
+    print(f"   '{test_file_name}' exists AFTER creation: {os.path.exists(test_file_path)}")
+
+    # 6. Delete only that local test.txt.
+    print(f"\n6. Attempting to delete '{test_file_name}' from '{current_working_directory}'...")
+    try:
+        # Explicitly check for existence again to be safe, though it should exist here.
+        if os.path.exists(test_file_path):
+            os.remove(test_file_path)
+            print(f"   '{test_file_name}' deleted successfully.")
+        else:
+            print(f"   '{test_file_name}' was not found for deletion.")
+    except OSError as e:
+        print(f"   Error deleting '{test_file_name}': {e}")
+    except Exception as e:
+        print(f"   An unexpected error occurred during deletion: {e}")
+
+
+    # 7. Print whether test.txt exists after deletion.
+    print(f"   '{test_file_name}' exists AFTER deletion: {os.path.exists(test_file_path)}")
+
+    print("\n--- Docker Sandbox Lab Checks Complete ---")
+
+if __name__ == "__main__":
+    run_docker_sandbox_checks()
+```
+----------------------------------------------------------------------
+
+Audit Agent output:
+----------------------------------------------------------------------
+Audit Summary:
+The provided Python code is well-audited and safe to execute within a Docker sandboxed environment. It strictly adheres to all specified rules: it's designed for Docker execution, explicitly checks but does not access or modify host OS paths, and limits all file operations (creation and deletion of `test.txt`) to the Docker working directory. No improvements are necessary for safety.
+
+```python
+import os
+import platform
+import sys
+
+def run_docker_sandbox_checks():
+    """
+    Performs a series of checks for a secure Docker sandbox lab environment.
+    This script is designed to run inside a Docker container.
+    """
+    print("--- Docker Sandbox Lab Checks ---")
+
+    # 1. Print whether /.dockerenv exists.
+    # This file is typically present in official Docker containers.
+    dockerenv_path = '/.dockerenv'
+    print(f"1. Does '{dockerenv_path}' exist? {os.path.exists(dockerenv_path)}")
+
+    # 2. Print OS and current working directory.
+    print(f"2. Operating System: {platform.system()} {platform.release()} (Architecture: {platform.machine()})")
+    print(f"   Python Version: {sys.version.splitlines()[0]}")
+    current_working_directory = os.getcwd()
+    print(f"   Current Working Directory: {current_working_directory}")
+
+    # 3. List files in the current working directory.
+    print(f"\n3. Files in current working directory ('{current_working_directory}'):")
+    try:
+        files_in_cwd = os.listdir(current_working_directory)
+        if files_in_cwd:
+            for entry in files_in_cwd:
+                # Add a marker for directories for better visibility
+                full_path = os.path.join(current_working_directory, entry)
+                if os.path.isdir(full_path):
+                    print(f"   - {entry}/")
+                else:
+                    print(f"   - {entry}")
+        else:
+            print("   (No files found)")
+    except OSError as e:
+        print(f"   Error listing files in CWD: {e}")
+
+    # 4. Check whether these host paths are visible.
+    # In a secure sandbox, these paths should typically NOT be visible (return False).
+    # If they return True, it indicates a volume mount or a misconfiguration.
+    host_paths_to_check = [
+        'C:/Users/Dell/Desktop',      # Common Windows path
+        '/mnt/c/Users/Dell/Desktop',  # Common WSL path when Windows drives are mounted
+        '/Users/Dell/Desktop'         # Common macOS/Linux path
+    ]
+    print("\n4. Checking visibility of potential host Desktop paths:")
+    for path in host_paths_to_check:
+        print(f"   - Is '{path}' visible (exists)? {os.path.exists(path)}")
+        # IMPORTANT: This check only verifies existence.
+        # The script does NOT attempt to read, write, or modify these paths.
+
+    # Define the test file path within the current working directory.
+    test_file_name = "test.txt"
+    test_file_path = os.path.join(current_working_directory, test_file_name)
+
+    print(f"\n5. & 7. Managing '{test_file_name}' in '{current_working_directory}':")
+
+    # 7. Print whether test.txt exists before creation.
+    print(f"   '{test_file_name}' exists BEFORE creation: {os.path.exists(test_file_path)}")
+
+    # 5. Create test.txt only in the current working directory.
+    try:
+        with open(test_file_path, 'w') as f:
+            f.write("This is a test file created by the secure Docker sandbox script.\n")
+            f.write("It should only exist and be deleted within the current working directory.\n")
+        print(f"   '{test_file_name}' created successfully.")
+    except Exception as e:
+        print(f"   Error creating '{test_file_name}': {e}")
+        # Exit if creation fails to prevent deletion attempts on non-existent file
+        # or misinterpreting subsequent checks.
+        sys.exit(1)
+
+    # 7. Print whether test.txt exists after creation.
+    print(f"   '{test_file_name}' exists AFTER creation: {os.path.exists(test_file_path)}")
+
+    # 6. Delete only that local test.txt.
+    print(f"\n6. Attempting to delete '{test_file_name}' from '{current_working_directory}'...")
+    try:
+        # Explicitly check for existence again to be safe, though it should exist here.
+        if os.path.exists(test_file_path):
+            os.remove(test_file_path)
+            print(f"   '{test_file_name}' deleted successfully.")
+        else:
+            print(f"   '{test_file_name}' was not found for deletion.")
+    except OSError as e:
+        print(f"   Error deleting '{test_file_name}': {e}")
+    except Exception as e:
+        print(f"   An unexpected error occurred during deletion: {e}")
+
+
+    # 7. Print whether test.txt exists after deletion.
+    print(f"   '{test_file_name}' exists AFTER deletion: {os.path.exists(test_file_path)}")
+
+    print("\n--- Docker Sandbox Lab Checks Complete ---")
+
+if __name__ == "__main__":
+    run_docker_sandbox_checks()
+```
+----------------------------------------------------------------------
+
+Safety validation failed.
+Risky patterns found: ['Desktop', 'C:/', '/mnt/c']
+Fallback safe code selected.
+
+Final code shown to human:
+----------------------------------------------------------------------
+```python
+import os
+import platform
+from pathlib import Path
+
+print("=== PHASE 2: HITL + AUDIT + DOCKER SANDBOX ===")
+print("Docker flag /.dockerenv exists:", Path("/.dockerenv").exists())
+print("Platform:", platform.platform())
+print("Current working directory:", os.getcwd())
+
+print("\nFiles in current working directory:")
+for item in sorted(Path(".").iterdir()):
+    print(" -", item.name)
+
+print("\nChecking host Desktop paths from inside container:")
+for path in ["C:/Users/Dell/Desktop", "/mnt/c/Users/Dell/Desktop", "/Users/Dell/Desktop"]:
+    print(f"{path} exists inside container:", Path(path).exists())
+
+target = Path("test.txt")
+target.write_text("container-only test file", encoding="utf-8")
+
+print("\nCreated:", target.resolve())
+print("test.txt exists before deletion:", target.exists())
+
+target.unlink()
+
+print("Deleted container-local test.txt.")
+print("test.txt exists after deletion:", target.exists())
+print("\nConclusion: Approved code ran only inside Docker.")
+```
+----------------------------------------------------------------------
+
+HITL approval:
+Prompt: Execute this code? (Y/N)
+Human response: N
+Approved: False
+
+Execution skipped.
+Docker executor was not called.
+
+Phase 2 answers:
+HITL was implemented using an explicit Y/N approval gate before Docker execution.
+The program waits for human input before calling the Executor Agent.
+If input times out, execution is rejected by default.
+If the user rejects execution, no code runs.

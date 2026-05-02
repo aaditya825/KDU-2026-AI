@@ -1,0 +1,5 @@
+target = Path("test.txt")
+target.write_text("hello from attempt 2", encoding="utf-8")
+print("Created:", target.exists())
+target.unlink()
+print("Deleted:", not target.exists())

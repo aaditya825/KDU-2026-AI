@@ -1,0 +1,212 @@
+PHASE 1 - BEFORE DOCKER: UNSAFE HOST EXECUTION DEMO
+======================================================================
+
+System info:
+OS: Windows-11-10.0.26200-SP0
+Project directory: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI
+Controlled demo desktop: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI\host_demo_desktop
+
+IMPORTANT SAFETY NOTE:
+The dangerous agent-generated code is NOT executed on the host. Only a safe simulation script is executed.
+
+Coder Agent generated this potentially dangerous code:
+----------------------------------------------------------------------
+```python
+import os
+from pathlib import Path
+
+desktop = Path.home() / "Desktop"
+
+if desktop.exists():
+    for item in desktop.iterdir():
+        if item.is_file():
+            print(item.name)
+            if item.name == "test.txt":
+                try:
+                    item.unlink()
+                except Exception:
+                    pass
+```
+----------------------------------------------------------------------
+
+Decision:
+For safety, we do NOT execute the generated dangerous code on the host.
+
+Safe simulated local execution output:
+----------------------------------------------------------------------
+=== UNSAFE MODE DEMO: HOST EXECUTION, BUT DELETION IS SIMULATED ===
+
+This script is running directly on the host OS.
+
+Host OS: Windows-11-10.0.26200-SP0
+
+Current working directory: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI\local_work_dir
+
+Controlled demo desktop: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI\host_demo_desktop
+
+Files visible in controlled demo desktop:
+
+ - notes.txt
+
+ - test.txt
+
+
+
+Environment variable names visible to this host Python process:
+
+ - ALLUSERSPROFILE
+
+ - APPDATA
+
+ - BUNDLED_DEBUGPY_PATH
+
+ - CHROME_CRASHPAD_PIPE_NAME
+
+ - COLORTERM
+
+ - COMMONPROGRAMFILES
+
+ - COMMONPROGRAMFILES(X86)
+
+ - COMMONPROGRAMW6432
+
+ - COMPUTERNAME
+
+ - COMSPEC
+
+ - DRIVERDATA
+
+ - EFC_22996_1592913036
+
+ - GEMINI_API_KEY
+
+ - GIT_ASKPASS
+
+ - HOMEDRIVE
+
+ - HOMEPATH
+
+ - INTELLIJ IDEA
+
+ - JAVA_HOME
+
+ - LANG
+
+ - LOCALAPPDATA
+
+ - LOGONSERVER
+
+ - MAVEN_HOME
+
+ - NUMBER_OF_PROCESSORS
+
+ - ONEDRIVE
+
+ - OS
+
+ - PATH
+
+ - PATHEXT
+
+ - PROCESSOR_ARCHITECTURE
+
+ - PROCESSOR_IDENTIFIER
+
+ - PROCESSOR_LEVEL
+
+ - PROCESSOR_REVISION
+
+ - PROGRAMDATA
+
+ - PROGRAMFILES
+
+ - PROGRAMFILES(X86)
+
+ - PROGRAMW6432
+
+ - PSEXECUTIONPOLICYPREFERENCE
+
+ - PSMODULEPATH
+
+ - PUBLIC
+
+ - PYDEVD_DISABLE_FILE_VALIDATION
+
+ - PYTHONSTARTUP
+
+ - PYTHON_BASIC_REPL
+
+ - SESSIONNAME
+
+ - SYSTEMDRIVE
+
+ - SYSTEMROOT
+
+ - TEMP
+
+ - TERM_PROGRAM
+
+ - TERM_PROGRAM_VERSION
+
+ - TMP
+
+ - USERDOMAIN
+
+ - USERDOMAIN_ROAMINGPROFILE
+
+ - USERNAME
+
+ - USERPROFILE
+
+ - VIRTUAL_ENV
+
+ - VIRTUAL_ENV_PROMPT
+
+ - VSCODE_A11Y_MODE
+
+ - VSCODE_DEBUGPY_ADAPTER_ENDPOINTS
+
+ - VSCODE_GIT_ASKPASS_EXTRA_ARGS
+
+ - VSCODE_GIT_ASKPASS_MAIN
+
+ - VSCODE_GIT_ASKPASS_NODE
+
+ - VSCODE_GIT_IPC_HANDLE
+
+ - VSCODE_INJECTION
+
+ - VSCODE_JAVA_EXEC
+
+ - VSCODE_JDWP_ADAPTER_ENDPOINTS
+
+ - VSCODE_NONCE
+
+ - VSCODE_STABLE
+
+ - WINDIR
+
+ - _OLD_VIRTUAL_PATH
+
+
+
+[SIMULATION ONLY] Would delete: C:\Users\Dell\Desktop\Phase3-AI\KDU-2026-AI\host_demo_desktop\test.txt
+
+[SAFETY] No deletion performed.
+
+
+
+Verification: test.txt still exists: True
+
+
+----------------------------------------------------------------------
+
+Answers before Docker:
+Q: Could the agent access your local system?
+A: Yes, if we allowed generated code to run through LocalCommandLineCodeExecutor, it would execute on the Windows host.
+
+Q: Could it read environment variables?
+A: Yes. The safe simulation printed the environment variable names visible to the host Python process.
+
+Q: Did we delete any real files from Desktop?
+A: No. Deletion was simulated only, and the controlled test.txt file was preserved.
