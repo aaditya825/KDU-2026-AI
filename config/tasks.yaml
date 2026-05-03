@@ -1,0 +1,53 @@
+research_task:
+  description: >
+    Research the topic: "{topic}".
+
+    Use the available tools. You must try to use both SerperDevTool and
+    the Unreliable Research Tool. If a tool fails, clearly mention the
+    failure and continue with the best available information.
+
+    Return 5-7 bullet points covering benefits, risks, and practical examples.
+
+    Also include this run label in your answer: "{run_label}".
+  expected_output: >
+    A bullet-point research brief with benefits, risks, examples, and a
+    short note about whether any tool failed.
+  agent: "researcher"
+
+fact_check_task:
+  description: >
+    Review the research brief created by the Researcher.
+
+    Check for unsupported claims, exaggerations, missing context, or
+    contradictions. Rewrite the notes into a more reliable version.
+
+    Pay attention to whether any information appears to come from memory
+    from previous runs.
+  expected_output: >
+    A fact-check report containing verified points, questionable points,
+    corrections, memory observations, and a final reliability rating.
+  agent: "fact_checker"
+  context:
+    - "research_task"
+
+writing_task:
+  description: >
+    Using the fact-check report, write a final student submission report.
+
+    The report must be 300-400 words and include:
+    1. Title
+    2. Introduction
+    3. Benefits
+    4. Risks
+    5. Tool failure observation
+    6. Memory observation
+    7. Conclusion
+
+    Important: follow this task format even though the Writer prefers
+    very short reports.
+  expected_output: >
+    A structured 300-400 word report with title, introduction, benefits,
+    risks, tool failure observation, memory observation, and conclusion.
+  agent: "writer"
+  context:
+    - "fact_check_task"
