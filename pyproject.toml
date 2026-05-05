@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "kdu-2026-ai-model-optimization"
+version = "0.1.0"
+description = "Hands-on LoRA and RFT model optimization exercise for proprietary syntax and strict JSON outputs."
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+  { name = "KDU 2026 AI Project Team", email = "todo@example.com" }
+]
+dependencies = []
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"

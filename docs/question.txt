@@ -1,0 +1,231 @@
+🧠 Hands-on Exercise: Model Optimization (LoRA + RFT)
+🎯 Objective
+Train and optimize a lightweight LLM using parameter-efficient fine-tuning (LoRA) and reinforcement fine-tuning (RFT) to handle proprietary company syntax and structured outputs.
+
+🧩 Problem Statement
+You are tasked with teaching a small 8B model highly proprietary company syntax and output formats.
+Constraints:
+Full fine-tuning is too expensive
+
+
+You must use:
+
+
+Unsloth framework
+
+
+LoRA (Low-Rank Adaptation)
+
+
+Free GPU setup
+
+
+Programmable graders for reinforcement fine-tuning
+
+
+Your system must ensure:
+Correct formatting
+
+
+Strict JSON outputs
+
+
+Efficient training with minimal compute
+
+
+
+⚙️ Task
+Phase 1: Try to Break It (Formatting Trap)
+Your Task
+Prepare a dataset of 50 JSONL examples mapping:
+Company-specific acronyms
+
+
+Required structured output formats
+
+
+Questions to Answer
+👉 The Attack
+If your JSONL dataset misses <|eot_id|> (End-of-Turn token) during training:
+What catastrophic behavior will occur during inference?
+
+
+Expected understanding:
+Model won’t learn conversation boundaries
+
+
+Outputs may:
+
+
+Continue indefinitely
+
+
+Merge multiple responses
+
+
+Break formatting / JSON structure
+
+
+
+👉 The Defense
+Format your dataset properly using:
+ChatML format OR
+
+
+Llama-3 instruction format
+
+
+Using:
+HuggingFace datasets
+
+
+
+Phase 2: Code Read & Audit (Reinforcement Graders)
+Your Task
+Ensure the model always outputs valid JSON using a Programmable Grader
+Questions to Answer
+👉 The Grader Loop
+Write a Python function:
+Input: Model output
+
+
+Process:
+
+
+Run json.loads()
+
+
+Output:
+
+
+1.0 → valid JSON
+
+
+-1.0 → invalid JSON
+
+
+Also explain:
+How this reward is used in:
+
+
+PPO (Proximal Policy Optimization)
+
+
+DPO (Direct Preference Optimization)
+
+
+Expected understanding:
+Reward signal guides model optimization
+
+
+Good outputs reinforced, bad outputs penalized
+
+
+
+Phase 3: Map & Optimize (LoRA + Deployment)
+Your Task
+Analyze and optimize your LoRA training setup
+Questions to Answer
+👉 Adapter Scaling
+What happens when LoRA rank r changes:
+From 8 → 16
+
+
+Expected understanding:
+Higher rank → more parameters
+
+
+Increased VRAM usage
+
+
+Better capacity but higher cost
+
+
+
+👉 Adapter Merging & Deployment
+After training:
+Merge LoRA adapters into base model
+
+
+Export as:
+
+
+4-bit quantized GGUF file
+
+
+Make it compatible with:
+
+
+Ollama
+
+
+
+🧪 Expectations
+Your system should demonstrate:
+Correct dataset formatting (ChatML / Llama format)
+
+
+Understanding of token-level issues (e.g., <|eot_id|>)
+
+
+Working programmable grader
+
+
+Integration of reward signals into RFT
+
+
+Efficient LoRA training setup
+
+
+Ability to merge and deploy optimized models
+
+
+
+📦 Deliverables
+Submit the following:
+✅ Unsloth training script (LoRA-based fine-tuning)
+
+
+✅ Programmable Grader Python script
+
+
+✅ Report covering:
+
+
+Formatting issues & fixes
+
+
+RFT reward logic
+
+
+LoRA parameter trade-offs
+
+
+Deployment approach (GGUF / Ollama)
+
+
+
+🔹 LLM Provider Guidelines 
+Prefer OpenRouter as the primary LLM provider (students are already familiar with it)
+
+
+If OpenAI API keys are provided/allowed, they can be used as an alternative
+
+
+Use Groq API (free tier) for fast and low-cost inference where applicable
+
+
+Avoid expensive models (no Llama 70B / no GPT-4 class models) — use Llama 3 8B and lightweight models only
+
+
+⚠️ Cost & Usage Guidelines
+Focus is on architecture and understanding, not output quality
+
+
+Always prefer the cheapest models during all hands-on/development phases
+
+
+Avoid unnecessary retries, loops, and repeated API calls
+
+
+Keep context small to reduce token usage (avoid sending large inputs repeatedly)
