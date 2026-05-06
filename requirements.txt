@@ -1,0 +1,18 @@
+# Dataset and config handling
+datasets>=2.20
+PyYAML>=6.0.2
+
+# Model training stack
+transformers>=4.44
+trl>=0.10
+accelerate>=0.34
+peft>=0.12
+sentencepiece>=0.2
+
+# API-backed helper usage
+openai>=1.40
+python-dotenv>=1.0
+
+# Notes:
+# - Unsloth should be installed in the actual training environment.
+# - 4-bit training and GGUF export are best run in a Linux/Colab GPU setup.
