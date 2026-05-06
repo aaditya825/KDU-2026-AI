@@ -305,6 +305,7 @@ flowchart TD
 ## Training Layer
 
 ### ModelLoader
+
 - *Responsibility:* Loads the base model in 4-bit NF4 quantization using Unsloth's `FastLanguageModel`.
 - *Input:* Model name string, max sequence length, load_in_4bit flag.
 - *Output:* `(model, tokenizer)` tuple ready for LoRA attachment.
