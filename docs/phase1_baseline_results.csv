@@ -1,0 +1,640 @@
+question,retrieved_context,generated_answer
+What is retrieval-augmented generation?,"Process[edit]
+Retrieval-augmented generation (RAG) enhances large language models (LLMs) by incorporating an information-retrieval mechanism that allows models to access and utilize additional data beyond their original training set. Ars Technica notes that ""when new information becomes available, rather than having to retrain the model, all that’s needed is to augment the model’s external knowledge base with the updated information"" (""augmentation"").[4] IBM states that ""in the generative phase, the LLM draws from the augmented prompt and its internal representation of its training data to synthesize"" an answer.[1]
+
+^ a b c d e Lewis, Patrick; Perez, Ethan; Piktus, Aleksandra; Petroni, Fabio; Karpukhin, Vladimir; Goyal, Naman; Küttler, Heinrich; Lewis, Mike; Yih, Wen-tau; Rocktäschel, Tim; Riedel, Sebastian; Kiela, Douwe (2020). ""Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"". Advances in Neural Information Processing Systems. 33. Curran Associates, Inc.: 9459–9474. arXiv:2005.11401.
+
+^ a b c d ""Can a technology called RAG keep AI models from making stuff up?"". Ars Technica. 6 June 2024. Retrieved 7 March 2025.
+
+^ ""Mitigating LLM hallucinations in text summarisation"". BBC. 20 June 2024. Retrieved 7 March 2025.
+
+^ ""Use cases for Retrieval-Augmented Generation"". Amazon Web Services. Retrieved 2026-05-05.
+
+^ ""What is retrieval-augmented generation?"". IBM. Retrieved 2026-05-05.
+
+Retrieval-augmented generation - Wikipedia
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Jump to content
+
+
+
+
+
+
+
+Main menu
+
+
+
+
+
+Main menu
+move to sidebar
+hide
+
+
+
+		Navigation
+	
+
+
+Main pageContentsCurrent eventsRandom articleAbout WikipediaContact us
+
+
+
+
+
+		Contribute
+	
+
+
+HelpLearn to editCommunity portalRecent changesUpload fileSpecial pages
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Search
+
+
+
+
+
+
+
+
+
+
+
+Search
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Appearance
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Donate
+
+Create account
+
+Log in
+
+
+
+
+
+
+
+
+Personal tools
+
+
+
+
+
+
+Donate
+
+
+Create account
+
+
+Log in
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Contents
+move to sidebar
+hide
+
+
+
+
+(Top)
+
+
+
+
+
+1
+RAG and LLM limitations
+
+
+
+
+
+
+
+
+2
+Process
+
+
+
+
+Toggle Process subsection
+
+
+
+
+
+2.1
+RAG key stages
+
+
+
+
+
+
+
+
+
+
+3
+Applications
+
+Type of information retrieval using LLMs
+Retrieval-augmented generation (RAG) is a technique that enables large language models (LLMs) to retrieve and incorporate new information from external data sources.[1] With RAG, LLMs first refer to a specified set of documents, then respond to user queries. These documents supplement information from the LLM's pre-existing training data.[2] This allows LLMs to use domain-specific and/or updated information that is not available in the training data.[2] For example, this helps LLM-based chatbots access internal company data or generate responses based on authoritative sources.
+
+^ Shi, Weijia; Min, Sewon; Yasunaga, Michihiro; Seo, Minjoon; James, Rich; Lewis, Mike; Zettlemoyer, Luke; Yih, Wen-tau (June 2024). ""REPLUG: Retrieval-Augmented Black-Box Language Models"". Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers). pp. 8371–8384. arXiv:2301.12652. doi:10.18653/v1/2024.naacl-long.463. Retrieved 16 March 2025.
+
+Applications[edit]
+Retrieval-augmented generation is used in applications where generated responses need to be grounded in external or frequently updated information. Commonly cited use cases include search engines, question-answering systems, customer support chatbots, enterprise knowledge assistants, content generation, recommendation systems, retail and e-commerce, and industrial or manufacturing workflows.[6][7]
+In healthcare, RAG has been studied as a way to ground large language model outputs in external medical knowledge sources, although reviews have noted continuing challenges around evaluation, ethics, and clinical reliability.[8]
+
+Improvements[edit]
+Improvements to the basic process above can be applied at different stages in the RAG flow. 
+
+Encoder[edit]
+These methods focus on the encoding of text as either dense or sparse vectors. Sparse vectors, which encode the identity of a word, are typically dictionary-length and contain mostly zeros. Dense vectors, which encode meaning, are more compact and contain fewer zeros. Various enhancements can improve the way similarities are calculated in the vector stores (databases).[9]","Retrieval-augmented generation (RAG) is a technique that allows large language models (LLMs) to access and use external data sources to supplement their existing training data. This enables LLMs to incorporate new, domain-specific, or updated information when responding to user queries."
+Why does RAG retrieve external knowledge before generating an answer?,"Evaluation and benchmarks[edit]
+RAG systems are commonly evaluated using benchmarks designed to test retrievability, retrieval accuracy and generative quality. Popular evaluation resources include BEIR, a heterogeneous benchmark for zero-shot information retrieval across multiple datasets, and Natural Questions, a large-scale question answering dataset released by Google Research.[20][21]
+
+Challenges[edit]
+RAG does not prevent hallucinations in LLMs. According to Ars Technica, ""It is not a direct solution because the LLM can still hallucinate around the source material in its response.""[4]
+While RAG improves the accuracy of large language models (LLMs), it does not eliminate all challenges. One limitation is that while RAG reduces the need for frequent model retraining, it does not remove it entirely. Additionally, LLMs may struggle to recognize when they lack sufficient information to provide a reliable response. Without specific training, models may generate answers even when they should indicate uncertainty. According to IBM, this issue can arise when the model lacks the ability to assess its own knowledge limitations.[1]
+
+RAG poisoning[edit]
+RAG systems may retrieve factually correct but misleading sources, leading to errors in interpretation. In some cases, an LLM may extract statements from a source without considering its context, resulting in an incorrect conclusion. Additionally, when faced with conflicting information, RAG models may struggle to determine which source is accurate. The worst case outcome of this limitation is that the model may combine details from multiple sources producing responses that merge outdated and updated information in a misleading manner. According to the MIT Technology Review, these issues occur because RAG systems may misinterpret the data they retrieve.[2]
+
+References[edit]
+
+^ a b c d e f ""What is retrieval-augmented generation?"". IBM. 22 August 2023. Retrieved 7 March 2025.
+
+^ a b c d e f ""Why Google's AI Overviews gets things wrong"". MIT Technology Review. 31 May 2024. Retrieved 7 March 2025.
+
+Process[edit]
+Retrieval-augmented generation (RAG) enhances large language models (LLMs) by incorporating an information-retrieval mechanism that allows models to access and utilize additional data beyond their original training set. Ars Technica notes that ""when new information becomes available, rather than having to retrain the model, all that’s needed is to augment the model’s external knowledge base with the updated information"" (""augmentation"").[4] IBM states that ""in the generative phase, the LLM draws from the augmented prompt and its internal representation of its training data to synthesize"" an answer.[1]
+
+Type of information retrieval using LLMs
+Retrieval-augmented generation (RAG) is a technique that enables large language models (LLMs) to retrieve and incorporate new information from external data sources.[1] With RAG, LLMs first refer to a specified set of documents, then respond to user queries. These documents supplement information from the LLM's pre-existing training data.[2] This allows LLMs to use domain-specific and/or updated information that is not available in the training data.[2] For example, this helps LLM-based chatbots access internal company data or generate responses based on authoritative sources.
+
+LLMs with RAG are programmed to prioritize new information. This technique has been called ""prompt stuffing."" Without prompt stuffing, the LLM's input is generated by a user; with prompt stuffing, additional relevant context is added to this input to guide the model’s response. This approach provides the LLM with key information early in the prompt, encouraging it to prioritize the supplied data over pre-existing training knowledge.[5]
+
+RAG improves large language models (LLMs) by incorporating information retrieval before generating responses.[3] Unlike LLMs that rely on static training data, RAG pulls relevant text from databases, uploaded documents, or web sources.[1] According to Ars Technica, ""RAG is a way of improving LLM performance, in essence by blending the LLM process with a web search or other document look-up process to help LLMs stick to the facts."" This method helps reduce AI hallucinations,[3] which have caused chatbots to describe policies that don't exist, or recommend nonexistent legal cases to lawyers that are looking for citations to support their arguments.[4]
+RAG also reduces the need to retrain LLMs with new data, saving on computational and financial costs.[1] Beyond efficiency gains, RAG also allows LLMs to include sources in their responses, so users can verify the cited sources. This provides greater transparency, as users can cross-check retrieved content to ensure accuracy and relevance.
+The term retrieval-augmented generation (RAG) was introduced in a 2020 paper that described combining a parametric language model with a non-parametric external memory accessed through retrieval at inference time.[3]","RAG retrieves external knowledge before generating an answer to allow large language models (LLMs) to access and utilize data beyond their original training set. This enables LLMs to use domain-specific and/or updated information that is not available in their training data, helping them to stick to the facts and reduce hallucinations."
+What are the main components of a RAG system?,"RAG key stages[edit]
+Overview of RAG process, combining external documents and user input into an LLM prompt to get tailored output
+Typically, the data to be referenced is converted into LLM embeddings, numerical representations in the form of a large vector space. RAG can be used on unstructured (usually text), semi-structured, or structured data (for example knowledge graphs). These embeddings are then stored in a vector database to allow for document retrieval.
+Given a user query, a document retriever is first called to select the most relevant documents that will be used to augment the query.[2][3] This comparison can be done using a variety of methods, which depend in part on the type of indexing used.[1]
+The model feeds this relevant retrieved information into the LLM via prompt engineering of the user's original query. Newer implementations (as of 2023[update]) can also incorporate specific augmentation modules with abilities such as expanding queries into multiple domains and using memory and self-improvement to learn from previous retrievals.
+
+RAG poisoning[edit]
+RAG systems may retrieve factually correct but misleading sources, leading to errors in interpretation. In some cases, an LLM may extract statements from a source without considering its context, resulting in an incorrect conclusion. Additionally, when faced with conflicting information, RAG models may struggle to determine which source is accurate. The worst case outcome of this limitation is that the model may combine details from multiple sources producing responses that merge outdated and updated information in a misleading manner. According to the MIT Technology Review, these issues occur because RAG systems may misinterpret the data they retrieve.[2]
+
+References[edit]
+
+^ a b c d e f ""What is retrieval-augmented generation?"". IBM. 22 August 2023. Retrieved 7 March 2025.
+
+^ a b c d e f ""Why Google's AI Overviews gets things wrong"". MIT Technology Review. 31 May 2024. Retrieved 7 March 2025.
+
+The adoption of RAG in consumer-facing web search products has given rise to new content optimization disciplines, as practitioners have noted that content retrievability in RAG systems depends on factors like semantic structure, passage-level authority signals, and entity clarity rather than traditional search ranking signals such as backlinks.[18][19]
+
+Type of information retrieval using LLMs
+Retrieval-augmented generation (RAG) is a technique that enables large language models (LLMs) to retrieve and incorporate new information from external data sources.[1] With RAG, LLMs first refer to a specified set of documents, then respond to user queries. These documents supplement information from the LLM's pre-existing training data.[2] This allows LLMs to use domain-specific and/or updated information that is not available in the training data.[2] For example, this helps LLM-based chatbots access internal company data or generate responses based on authoritative sources.
+
+Evaluation and benchmarks[edit]
+RAG systems are commonly evaluated using benchmarks designed to test retrievability, retrieval accuracy and generative quality. Popular evaluation resources include BEIR, a heterogeneous benchmark for zero-shot information retrieval across multiple datasets, and Natural Questions, a large-scale question answering dataset released by Google Research.[20][21]
+
+Challenges[edit]
+RAG does not prevent hallucinations in LLMs. According to Ars Technica, ""It is not a direct solution because the LLM can still hallucinate around the source material in its response.""[4]
+While RAG improves the accuracy of large language models (LLMs), it does not eliminate all challenges. One limitation is that while RAG reduces the need for frequent model retraining, it does not remove it entirely. Additionally, LLMs may struggle to recognize when they lack sufficient information to provide a reliable response. Without specific training, models may generate answers even when they should indicate uncertainty. According to IBM, this issue can arise when the model lacks the ability to assess its own knowledge limitations.[1]
+
+Retro language model for RAG.  Each Retro block consists of Attention, Chunked Cross Attention, and Feed Forward layers.  Black-lettered boxes show data being changed, and blue lettering shows the algorithm performing the changes.
+By redesigning the language model with the retriever in mind, a 25-time smaller network can get comparable perplexity as its much larger counterparts.[16] Because it is trained from scratch, this method (Retro) incurs the high cost of training runs that the original RAG scheme avoided. The hypothesis is that by giving domain knowledge during training, Retro needs less focus on the domain and can devote its smaller weight resources only to language semantics. The redesigned language model is shown here.  
+It has been reported that Retro is not reproducible, so modifications were made to make it so.  The more reproducible version is called Retro++ and includes in-context RAG.[17]
+
+Chunking[edit]
+Chunking involves various strategies for breaking up the data into vectors so the retriever can find details in it.","The main components of a RAG system are:
+
+*   **Data Conversion:** Data is converted into LLM embeddings, which are numerical representations stored in a vector database.
+*   **Document Retriever:** This component selects the most relevant documents to augment the user's query.
+*   **LLM Prompting:** The retrieved information is fed into the LLM along with the user's original query.
+*   **Augmentation Modules (optional):** Newer implementations may include modules for query expansion, memory, and self-improvement."
+How can RAG help reduce hallucinations?,"Evaluation and benchmarks[edit]
+RAG systems are commonly evaluated using benchmarks designed to test retrievability, retrieval accuracy and generative quality. Popular evaluation resources include BEIR, a heterogeneous benchmark for zero-shot information retrieval across multiple datasets, and Natural Questions, a large-scale question answering dataset released by Google Research.[20][21]
+
+Challenges[edit]
+RAG does not prevent hallucinations in LLMs. According to Ars Technica, ""It is not a direct solution because the LLM can still hallucinate around the source material in its response.""[4]
+While RAG improves the accuracy of large language models (LLMs), it does not eliminate all challenges. One limitation is that while RAG reduces the need for frequent model retraining, it does not remove it entirely. Additionally, LLMs may struggle to recognize when they lack sufficient information to provide a reliable response. Without specific training, models may generate answers even when they should indicate uncertainty. According to IBM, this issue can arise when the model lacks the ability to assess its own knowledge limitations.[1]
+
+RAG poisoning[edit]
+RAG systems may retrieve factually correct but misleading sources, leading to errors in interpretation. In some cases, an LLM may extract statements from a source without considering its context, resulting in an incorrect conclusion. Additionally, when faced with conflicting information, RAG models may struggle to determine which source is accurate. The worst case outcome of this limitation is that the model may combine details from multiple sources producing responses that merge outdated and updated information in a misleading manner. According to the MIT Technology Review, these issues occur because RAG systems may misinterpret the data they retrieve.[2]
+
+References[edit]
+
+^ a b c d e f ""What is retrieval-augmented generation?"". IBM. 22 August 2023. Retrieved 7 March 2025.
+
+^ a b c d e f ""Why Google's AI Overviews gets things wrong"". MIT Technology Review. 31 May 2024. Retrieved 7 March 2025.
+
+LLMs with RAG are programmed to prioritize new information. This technique has been called ""prompt stuffing."" Without prompt stuffing, the LLM's input is generated by a user; with prompt stuffing, additional relevant context is added to this input to guide the model’s response. This approach provides the LLM with key information early in the prompt, encouraging it to prioritize the supplied data over pre-existing training knowledge.[5]
+
+Applications[edit]
+Retrieval-augmented generation is used in applications where generated responses need to be grounded in external or frequently updated information. Commonly cited use cases include search engines, question-answering systems, customer support chatbots, enterprise knowledge assistants, content generation, recommendation systems, retail and e-commerce, and industrial or manufacturing workflows.[6][7]
+In healthcare, RAG has been studied as a way to ground large language model outputs in external medical knowledge sources, although reviews have noted continuing challenges around evaluation, ethics, and clinical reliability.[8]
+
+Improvements[edit]
+Improvements to the basic process above can be applied at different stages in the RAG flow. 
+
+Encoder[edit]
+These methods focus on the encoding of text as either dense or sparse vectors. Sparse vectors, which encode the identity of a word, are typically dictionary-length and contain mostly zeros. Dense vectors, which encode meaning, are more compact and contain fewer zeros. Various enhancements can improve the way similarities are calculated in the vector stores (databases).[9]
+
+RAG improves large language models (LLMs) by incorporating information retrieval before generating responses.[3] Unlike LLMs that rely on static training data, RAG pulls relevant text from databases, uploaded documents, or web sources.[1] According to Ars Technica, ""RAG is a way of improving LLM performance, in essence by blending the LLM process with a web search or other document look-up process to help LLMs stick to the facts."" This method helps reduce AI hallucinations,[3] which have caused chatbots to describe policies that don't exist, or recommend nonexistent legal cases to lawyers that are looking for citations to support their arguments.[4]
+RAG also reduces the need to retrain LLMs with new data, saving on computational and financial costs.[1] Beyond efficiency gains, RAG also allows LLMs to include sources in their responses, so users can verify the cited sources. This provides greater transparency, as users can cross-check retrieved content to ensure accuracy and relevance.
+The term retrieval-augmented generation (RAG) was introduced in a 2020 paper that described combining a parametric language model with a non-parametric external memory accessed through retrieval at inference time.[3]
+
+Retro language model for RAG.  Each Retro block consists of Attention, Chunked Cross Attention, and Feed Forward layers.  Black-lettered boxes show data being changed, and blue lettering shows the algorithm performing the changes.
+By redesigning the language model with the retriever in mind, a 25-time smaller network can get comparable perplexity as its much larger counterparts.[16] Because it is trained from scratch, this method (Retro) incurs the high cost of training runs that the original RAG scheme avoided. The hypothesis is that by giving domain knowledge during training, Retro needs less focus on the domain and can devote its smaller weight resources only to language semantics. The redesigned language model is shown here.  
+It has been reported that Retro is not reproducible, so modifications were made to make it so.  The more reproducible version is called Retro++ and includes in-context RAG.[17]
+
+Chunking[edit]
+Chunking involves various strategies for breaking up the data into vectors so the retriever can find details in it.","RAG helps reduce AI hallucinations by incorporating information retrieval before generating responses. It pulls relevant text from databases, uploaded documents, or web sources, which helps LLMs stick to the facts."
+What are common applications of retrieval-augmented generation?,"^ a b c d e Lewis, Patrick; Perez, Ethan; Piktus, Aleksandra; Petroni, Fabio; Karpukhin, Vladimir; Goyal, Naman; Küttler, Heinrich; Lewis, Mike; Yih, Wen-tau; Rocktäschel, Tim; Riedel, Sebastian; Kiela, Douwe (2020). ""Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks"". Advances in Neural Information Processing Systems. 33. Curran Associates, Inc.: 9459–9474. arXiv:2005.11401.
+
+^ a b c d ""Can a technology called RAG keep AI models from making stuff up?"". Ars Technica. 6 June 2024. Retrieved 7 March 2025.
+
+^ ""Mitigating LLM hallucinations in text summarisation"". BBC. 20 June 2024. Retrieved 7 March 2025.
+
+^ ""Use cases for Retrieval-Augmented Generation"". Amazon Web Services. Retrieved 2026-05-05.
+
+^ ""What is retrieval-augmented generation?"". IBM. Retrieved 2026-05-05.
+
+Process[edit]
+Retrieval-augmented generation (RAG) enhances large language models (LLMs) by incorporating an information-retrieval mechanism that allows models to access and utilize additional data beyond their original training set. Ars Technica notes that ""when new information becomes available, rather than having to retrain the model, all that’s needed is to augment the model’s external knowledge base with the updated information"" (""augmentation"").[4] IBM states that ""in the generative phase, the LLM draws from the augmented prompt and its internal representation of its training data to synthesize"" an answer.[1]
+
+Retrieval-augmented generation - Wikipedia
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Jump to content
+
+
+
+
+
+
+
+Main menu
+
+
+
+
+
+Main menu
+move to sidebar
+hide
+
+
+
+		Navigation
+	
+
+
+Main pageContentsCurrent eventsRandom articleAbout WikipediaContact us
+
+
+
+
+
+		Contribute
+	
+
+
+HelpLearn to editCommunity portalRecent changesUpload fileSpecial pages
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Search
+
+
+
+
+
+
+
+
+
+
+
+Search
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Appearance
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Donate
+
+Create account
+
+Log in
+
+
+
+
+
+
+
+
+Personal tools
+
+
+
+
+
+
+Donate
+
+
+Create account
+
+
+Log in
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Contents
+move to sidebar
+hide
+
+
+
+
+(Top)
+
+
+
+
+
+1
+RAG and LLM limitations
+
+
+
+
+
+
+
+
+2
+Process
+
+
+
+
+Toggle Process subsection
+
+
+
+
+
+2.1
+RAG key stages
+
+
+
+
+
+
+
+
+
+
+3
+Applications
+
+Applications[edit]
+Retrieval-augmented generation is used in applications where generated responses need to be grounded in external or frequently updated information. Commonly cited use cases include search engines, question-answering systems, customer support chatbots, enterprise knowledge assistants, content generation, recommendation systems, retail and e-commerce, and industrial or manufacturing workflows.[6][7]
+In healthcare, RAG has been studied as a way to ground large language model outputs in external medical knowledge sources, although reviews have noted continuing challenges around evaluation, ethics, and clinical reliability.[8]
+
+Improvements[edit]
+Improvements to the basic process above can be applied at different stages in the RAG flow. 
+
+Encoder[edit]
+These methods focus on the encoding of text as either dense or sparse vectors. Sparse vectors, which encode the identity of a word, are typically dictionary-length and contain mostly zeros. Dense vectors, which encode meaning, are more compact and contain fewer zeros. Various enhancements can improve the way similarities are calculated in the vector stores (databases).[9]
+
+Type of information retrieval using LLMs
+Retrieval-augmented generation (RAG) is a technique that enables large language models (LLMs) to retrieve and incorporate new information from external data sources.[1] With RAG, LLMs first refer to a specified set of documents, then respond to user queries. These documents supplement information from the LLM's pre-existing training data.[2] This allows LLMs to use domain-specific and/or updated information that is not available in the training data.[2] For example, this helps LLM-based chatbots access internal company data or generate responses based on authoritative sources.
+
+^ Shi, Weijia; Min, Sewon; Yasunaga, Michihiro; Seo, Minjoon; James, Rich; Lewis, Mike; Zettlemoyer, Luke; Yih, Wen-tau (June 2024). ""REPLUG: Retrieval-Augmented Black-Box Language Models"". Proceedings of the 2024 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies (Volume 1: Long Papers). pp. 8371–8384. arXiv:2301.12652. doi:10.18653/v1/2024.naacl-long.463. Retrieved 16 March 2025.","Common applications of retrieval-augmented generation include search engines, question-answering systems, customer support chatbots, enterprise knowledge assistants, content generation, recommendation systems, retail and e-commerce, and industrial or manufacturing workflows. It has also been studied for use in healthcare to ground large language model outputs in external medical knowledge sources."

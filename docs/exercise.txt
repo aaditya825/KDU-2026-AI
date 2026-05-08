@@ -1,0 +1,247 @@
+﻿🧠 Hands-on Exercise: RAG Evaluation & Automated Testing
+🎯 Objective
+Build an automated regression testing pipeline for a RAG system using:
+* Ragas evaluation framework
+
+* LLM-as-a-judge approach
+
+Eliminate manual evaluation and enable scalable, objective measurement of system performance.
+________________
+
+
+🧩 Problem Statement
+You are tasked with evaluating a RAG system at scale.
+Constraints:
+   * You are strictly forbidden from manually reading outputs
+
+   * Traditional testing approaches do not work for generative AI
+
+   * You must implement:
+
+      * Automated evaluation pipeline
+
+      * Metric-based scoring
+
+      * Dataset-driven benchmarking
+
+Your system must:
+         * Detect performance changes
+
+         * Measure quality objectively
+
+         * Scale across multiple test cases
+
+________________
+
+
+⚙️ Task
+________________
+
+
+Phase 1: Try to Break It (The Vibe Check Fallacy)
+Your Task
+            * Build a basic RAG pipeline
+
+            * Ask 5 questions
+
+            * Manually read answers and verify quality
+
+Now:
+               * Slightly degrade your system prompt
+
+               * Re-run the same queries
+
+________________
+
+
+Questions to Answer
+👉 The Problem with Manual Evaluation
+                  * How do you know:
+
+                     * If system improved by 5%?
+
+                     * Or degraded by 10% across large datasets?
+
+Expected understanding:
+                        * Manual “vibe checks”:
+
+                           * Are subjective
+
+                           * Do not scale
+
+                           * Are inconsistent
+
+________________
+
+
+👉 Why Traditional Unit Testing Fails
+Explain why:
+                              * assert x == y does not work for LLM outputs
+
+Expected understanding:
+                                 * Outputs are:
+
+                                    * Non-deterministic
+
+                                    * Semantically correct but textually different
+
+                                       * Exact match testing is useless for generative systems
+
+________________
+
+
+Phase 2: Code Read & Audit (Ragas Metrics)
+Your Task
+Use the Ragas framework to evaluate outputs
+Input to evaluator:
+                                          * Question
+
+                                          * Retrieved Context
+
+                                          * Generated Answer
+
+________________
+
+
+Questions to Answer
+👉 Faithfulness Failure Case
+Scenario:
+                                             * Answer is correct
+
+                                             * But not grounded in retrieved context
+
+Which metric fails?
+✔️ Faithfulness
+Expected understanding:
+                                                * Model hallucinated outside context
+
+________________
+
+
+👉 Answer Relevance Failure Case
+Scenario:
+                                                   * Context contains correct answer
+
+                                                   * Model outputs long, irrelevant text
+
+Which metric fails?
+✔️ Answer Relevance
+Expected understanding:
+                                                      * Output does not directly address the question
+
+________________
+
+
+Phase 3: Map & Optimize (Dataset Evaluation)
+Your Task
+                                                         * Create a dataset of 20 Q&A pairs (ground truth)
+
+                                                         * Upload to:
+
+                                                            * LangSmith OR Langfuse
+
+Build a script to:
+                                                               * Run RAG pipeline on all questions
+
+                                                               * Evaluate using Ragas
+
+                                                               * Log results to dashboard
+
+________________
+
+
+Questions to Answer
+👉 Evaluation Dashboard Analysis
+                                                                  * What is your:
+
+                                                                     * Average Context Precision score?
+
+Expected understanding:
+                                                                        * Measures how relevant retrieved documents are
+
+________________
+
+
+👉 Cost Analysis
+                                                                           * How much did evaluation cost?
+
+Expected understanding:
+                                                                              * LLM-as-a-judge introduces:
+
+                                                                                 * Token cost
+
+                                                                                 * Scalability trade-offs
+
+________________
+
+
+🧪 Expectations
+Your system should demonstrate:
+                                                                                    * Understanding of why manual evaluation fails
+
+                                                                                    * Implementation of Ragas metrics
+
+                                                                                    * Ability to identify:
+
+                                                                                       * Faithfulness issues
+
+                                                                                       * Relevance issues
+
+                                                                                          * Dataset-driven evaluation pipeline
+
+                                                                                          * Integration with:
+
+                                                                                             * LangSmith or Langfuse
+
+                                                                                                * Awareness of:
+
+                                                                                                   * Evaluation cost vs scale trade-offs
+
+________________
+
+
+📦 Deliverables
+Submit the following:
+                                                                                                      * ✅ Evaluation script:
+
+                                                                                                         * Runs RAG pipeline over dataset
+
+                                                                                                         * Uses Ragas for scoring
+
+                                                                                                            * ✅ Metric outputs:
+
+                                                                                                               * Faithfulness
+
+                                                                                                               * Answer Relevance
+
+                                                                                                               * Context Precision (and others if used)
+
+                                                                                                                  * ✅ Report covering:
+
+                                                                                                                     * Why manual evaluation fails
+
+                                                                                                                     * Explanation of each metric
+
+                                                                                                                     * Evaluation results
+
+                                                                                                                     * Cost analysis of LLM-as-a-judge
+
+
+
+🔹 LLM Provider Guidelines 
+                                                                                                                        * Prefer OpenRouter as the primary LLM provider (students are already familiar with it)
+
+                                                                                                                        * If OpenAI API keys are provided/allowed, they can be used as an alternative
+
+                                                                                                                        * Use Groq API (free tier) for fast and low-cost inference where applicable
+
+                                                                                                                        * Avoid expensive models (no Llama 70B / no GPT-4 class models) — use Llama 3 8B and lightweight models only
+
+⚠️ Cost & Usage Guidelines
+                                                                                                                           * Focus is on architecture and understanding, not output quality
+
+                                                                                                                           * Always prefer the cheapest models during all hands-on/development phases
+
+                                                                                                                           * Avoid unnecessary retries, loops, and repeated API calls
+
+                                                                                                                           * Keep context small to reduce token usage (avoid sending large inputs repeatedly)
