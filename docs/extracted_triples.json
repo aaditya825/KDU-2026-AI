@@ -1,0 +1,80 @@
+[
+  {
+    "subject": "Apex Global Holdings",
+    "predicate": "parent_company_of",
+    "object": "Northstar Capital Group",
+    "evidence_page": 1
+  },
+  {
+    "subject": "Northstar Capital Group",
+    "predicate": "owned_by",
+    "object": "Apex Global Holdings",
+    "evidence_page": 1
+  },
+  {
+    "subject": "Apex Global Holdings",
+    "predicate": "controlled_by",
+    "object": "Apex Global Holdings",
+    "evidence_page": 1
+  },
+  {
+    "subject": "Blue Harbor Ltd.",
+    "predicate": "shell_company_used_by",
+    "object": "Northstar Capital Group",
+    "evidence_page": 2
+  },
+  {
+    "subject": "Blue Harbor Ltd.",
+    "predicate": "controlled_by",
+    "object": "Northstar Capital Group",
+    "evidence_page": 2
+  },
+  {
+    "subject": "Orion Manufacturing LLC",
+    "predicate": "owned_by",
+    "object": "Blue Harbor Ltd",
+    "evidence_page": 3
+  },
+  {
+    "subject": "John Smith",
+    "predicate": "works_for",
+    "object": "Orion Manufacturing LLC",
+    "evidence_page": 4
+  },
+  {
+    "subject": "John Smith",
+    "predicate": "executive_of",
+    "object": "Orion Manufacturing LLC",
+    "evidence_page": 4
+  },
+  {
+    "subject": "Maria Chen",
+    "predicate": "works_for",
+    "object": "Orion Manufacturing LLC",
+    "evidence_page": 4
+  },
+  {
+    "subject": "Maria Chen",
+    "predicate": "executive_of",
+    "object": "Orion Manufacturing LLC",
+    "evidence_page": 4
+  },
+  {
+    "subject": "Orion Manufacturing LLC",
+    "predicate": "controlled_by",
+    "object": "Blue Harbor Ltd",
+    "evidence_page": 4
+  },
+  {
+    "subject": "Silverline Nominees Ltd.",
+    "predicate": "shell_company_used_by",
+    "object": "Northstar Capital Group",
+    "evidence_page": 5
+  },
+  {
+    "subject": "Harbor Bridge Ventures",
+    "predicate": "shell_company_used_by",
+    "object": "Northstar Capital Group",
+    "evidence_page": 5
+  }
+]

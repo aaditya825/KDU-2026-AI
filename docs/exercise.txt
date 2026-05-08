@@ -1,0 +1,238 @@
+﻿🧠 Hands-on Exercise: GraphRAG for Multi-Hop Reasoning
+________________
+
+
+🎯 Rules of Engagement
+Standard RAG pipelines chunk text, which breaks relationships across different parts of a document.
+In this exercise, you will build a GraphRAG pipeline that preserves relationships using a knowledge graph and enables multi-hop reasoning.
+You may use any LLM provider (OpenAI / OpenRouter / Groq / Bedrock-supported models) as per your track guidelines.
+________________
+
+
+🔹 Phase 1: Try to Break It (Multi-Hop Blindspot)
+🎯 Objective
+Understand why traditional vector-based RAG systems fail at multi-hop reasoning.
+________________
+
+
+🧪 Task
+Step 1
+Take a 5-page document that contains:
+* Complex corporate ownership structure
+
+* Multiple shell companies
+
+* Executives and relationships
+
+________________
+
+
+Step 2
+   * Chunk the document
+
+   * Store it in a ChromaDB vector store
+
+________________
+
+
+Step 3
+      * Build a basic RAG pipeline using semantic search
+
+________________
+
+
+⚠️ Attack
+Ask the system:
+“Who is the ultimate parent company of the organization John Smith works for?”
+________________
+
+
+🚧 Challenge
+The answer requires combining facts from:
+         * Page 1
+
+         * Page 3
+
+         * Page 5
+
+Vector search retrieves based on semantic similarity, not relationships.
+________________
+
+
+❓ Questions to Answer
+            * Why did the retriever fail to fetch the chunk from page 1?
+
+            * Why does chunking break multi-hop reasoning?
+
+(Think in terms of embeddings and loss of relationships)
+
+________________
+
+
+🔹 Phase 2: Entity Extraction & Knowledge Graph
+🎯 Objective
+Convert unstructured text into a structured knowledge graph.
+________________
+
+
+🧪 Task
+Step 1
+Write a prompt using an LLM to extract data as JSON triples:
+[
+  { "subject": "...", "predicate": "...", "object": "..." }
+]
+
+________________
+Step 2
+               * Extract triples from the document
+
+________________
+
+
+Step 3
+Load the data into:
+                  * Neo4j (preferred)
+
+OR
+
+                  * Python NetworkX graph
+
+________________
+
+
+📊 Visualization
+                     * Visualize the graph (nodes + relationships)
+
+________________
+
+
+❓ Questions to Answer
+                        * How did your system handle entity resolution?
+
+(Example: “Apple Inc.” vs “Apple”)
+
+                        * Did your system:
+
+                           * Create duplicate nodes?
+
+                           * Or merge them correctly?
+
+                              * What improvements can you make to handle entity consistency better?
+
+________________
+
+
+🔹 Phase 3: Querying & Hybrid RAG
+🎯 Objective
+Use graph traversal to answer multi-hop queries and combine it with LLM reasoning.
+________________
+
+
+🧪 Task
+Step 1
+Convert user question → Cypher query using an LLM
+________________
+
+
+Step 2
+Execute query on Neo4j
+________________
+
+
+Step 3
+Retrieve the relationship path
+________________
+
+
+Step 4
+Pass this path into the final LLM prompt to generate the answer
+________________
+
+
+⚠️ Challenge
+Cypher queries are strict:
+                                 * If the LLM hallucinates schema → query fails
+
+________________
+
+
+❓ Questions to Answer
+                                    * How did you handle failures in Cypher query generation?
+
+(Retry loop / correction logic)
+
+                                    * Why is combining:
+
+                                       * Vector search (semantic understanding)
+
+                                       * Graph search (exact relationships)
+
+better than using only one?
+
+________________
+
+
+📦 Deliverables
+Submit a document containing:
+________________
+
+
+1. Implementation
+                                          * Python script for entity extraction
+
+                                          * Graph creation logic (Neo4j / NetworkX)
+
+________________
+
+
+2. Query System
+                                             * Cypher query generation logic
+
+                                             * Retry/error handling approach
+
+________________
+
+
+3. Evidence
+                                                * Screenshot of your knowledge graph
+
+Example flow:
+                                                   * Query → Graph path → Final answer
+
+________________
+
+
+4. Reflection
+Write short answers for:
+                                                      * Why vector RAG failed in this case
+
+                                                      * How GraphRAG improved the result
+
+                                                      * Challenges faced (entity resolution, query failures)
+
+                                                      * When you would use GraphRAG in real-world systems
+
+________________
+
+
+📝 Note
+Use Neo4j AuraDB (Free Tier) for easy setup and scalability without managing local instances.
+
+
+🔹 LLM Provider Guidelines 
+                                                         * Prefer OpenRouter as the primary LLM provider (students are already familiar with it)
+
+                                                         * If OpenAI API keys are provided/allowed, they can be used as an alternative
+
+                                                         * Use Groq API (free tier) for fast and low-cost inference where applicable
+
+                                                         * Avoid expensive models (no Llama 70B / no GPT-4 class models) — use Llama 3 8B and lightweight models only
+
+⚠️ Cost & Usage Guidelines
+                                                            * Focus is on architecture and understanding, not output quality
+
+                                                            * Always prefer the cheapest models during all hands-on/development phases
+
+                                                            * Avoid unnecessary retries, loops, and repeated API calls
+
+                                                            * Keep context small to reduce token usage (avoid sending large inputs repeatedly)
